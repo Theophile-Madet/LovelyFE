@@ -1,5 +1,9 @@
 --panels.lua
 
+--used to create preview images of control panels
+--useless since controls images from emumovies have been added
+--might be reused if improved
+
 Gamestate.panels = Gamestate.new()
 local st = Gamestate.panels
 

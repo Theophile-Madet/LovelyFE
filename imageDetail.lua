@@ -1,5 +1,7 @@
 --imageDetail.lua
 
+--called by imagesMenu to show an image in full screen
+
 Gamestate.imageDetail = Gamestate.new()
 local st = Gamestate.imageDetail
 

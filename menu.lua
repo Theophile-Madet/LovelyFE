@@ -1,5 +1,8 @@
 --menu.lua
 
+--simple menu showing the "advanced" functions, such as search.
+--only search and images are available at this time
+
 Gamestate.menu = Gamestate.new()
 local st = Gamestate.menu
 
@@ -51,9 +54,9 @@ function st:draw()
 		if i == 1 then
 			message = "Images"
 		elseif i == 2 then
-			message = "Recherche"
+			message = "Search"
 		elseif i == 3 then
-			message = "Commentaire"
+			message = "Unused"
 		end
 		love.graphics.print(message, (W/16)*i + X*(i-1), H/2 - Y/2)
 	end

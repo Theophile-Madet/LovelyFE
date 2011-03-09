@@ -1,5 +1,8 @@
 --controls.lua
 
+--Control configuration
+--A lot can be done to improve ergonomics here
+
 Gamestate.controls = Gamestate.new()
 local st = Gamestate.controls
 

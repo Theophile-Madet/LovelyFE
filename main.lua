@@ -23,7 +23,7 @@ function love.load(arg)
 	end
 end
 
-function gameSort(A, B)
+function gameSort(A, B) --used in a few places to sort the game list
 	if A == nil then
 		return false
 	end

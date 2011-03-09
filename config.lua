@@ -1,11 +1,8 @@
 --config.lua
 
---resolutionWidth = 800
---resolutionHeight = 600
-
 pathToMame="MAME"
 
-romsNotToInclude ={
+romsNotToInclude ={ --can be used for bios for example
 "neogeo",
 "nemesis",
 "cpzn2",
@@ -29,7 +26,7 @@ romsNotToInclude ={
 "atarisy1",
 "crusnexo"}
 
-function custom(L)
+function custom(L) --used to customize game names
 	local function f(name, description)
 		print("	Changing " .. name .. " description to " .. description)
 		xml.find(L[name], "description")[1] = description

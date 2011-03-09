@@ -1,5 +1,7 @@
 --frontend.lua
 
+--main state, will mainly display the interface and switch to the appropriate state when action is taken.
+
 Gamestate.frontend = Gamestate.new()
 local st = Gamestate.frontend
 
@@ -17,12 +19,14 @@ function st:draw()
 
 	drawBackground()
 	
-	love.graphics.print(xml.find(game, "description")[1], 0, 0)
+	-- Prints useful messages for debugging
+	--[[ love.graphics.print(xml.find(game, "description")[1], 0, 0)
 	love.graphics.print("currentGame = " ..currentGame, 0, 15)
 	love.graphics.print("currentImage = " ..currentImage, 0, 30)
 	love.graphics.print(images[currentImage], 0, 45)
-	love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W)
+	love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W) --]]
 
+	--Print game names on the right
 	love.graphics.print(xml.find(gameList[currentGame-2], "description")[1], (1300/1600)*W, (550/1200)*H, -0.05)
 	love.graphics.print(xml.find(gameList[currentGame-1], "description")[1], (1280/1600)*W, (690/1200)*H, 0.05)
 	love.graphics.print(xml.find(gameList[currentGame], "description")[1], (1300/1600)*W, (835/1200)*H, -0.05)
@@ -31,11 +35,6 @@ function st:draw()
 	
 	love.graphics.draw(tonneaux[1], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)
 	
-	if love.keyboard.isDown("tab") then
-		local W = love.graphics.getWidth()
-		local H = love.graphics.getHeight()
-		love.graphics.draw(logo, W/2 - logo:getWidth()/2, H/2 - logo:getHeight()/2)
-	end
 end
 
 function st:keypressed(key, unicode)
@@ -87,7 +86,7 @@ function loadGameImages(game, ...)
 	end
 end
 
-function emptyGameImages(game)
+function emptyGameImages(game) --remove some images from memory
 	print("emptying "..game["name"])
 	for _, image in ipairs(images) do
 		game[image]=nil
@@ -202,7 +201,7 @@ function getInfo()
 	return info
 end
 
-function drawBackground()
+function drawBackground() --separated from st:draw because reused several times in other states
 	local game = gameList[currentGame]
 	
 	if game[images[currentImage]] ~= nil then

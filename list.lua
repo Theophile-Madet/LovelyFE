@@ -1,5 +1,7 @@
 --list.lua
 
+--Used to create a clean XML file containing only the available games and the useful informations.
+
 require "LuaXml"
 require "config"
 

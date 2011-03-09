@@ -1,9 +1,12 @@
 --launch.lua
 
+--first real state activated, loads everything requiered and displays logo
+
 require "frontend"
 
 Gamestate.launch = Gamestate.new()
 local st = Gamestate.launch
+
 local logo
 
 function st:enter()
@@ -56,6 +59,10 @@ function st:draw()
 	love.graphics.draw(logo, W/2 - logo:getWidth()/2, H/2 - logo:getHeight()/2)
 end
 
+function st:leave()
+	logo = nil
+end
+
 function load()
 	math.randomseed(os.time())
 	gameList = xml.load("availableList.xml")
@@ -68,7 +75,7 @@ function load()
 	currentGame = math.random(#gameList)
 	currentImage = 13
 	images={"Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title"}
-	gameList[0] = nil
+	gameList[0] = nil --removed to avoid specific case tests when changing games
 	
 	mt = {}
 	mt.__index = function(o, key)
@@ -93,7 +100,7 @@ function load()
 	tonneaux[4] = love.graphics.newImage("Tonneau4.png")
 	love.graphics.setBackgroundColor(30,30,30)
 	
-	dofile(love.filesystem.getSaveDirectory().."/saved.lua")
+	dofile(love.filesystem.getSaveDirectory().."/saved.lua")  --controls are saved in there
 	nbJoy = love.joystick.getNumJoysticks()
 	for i=0,nbJoy do
 		love.joystick.open(i)

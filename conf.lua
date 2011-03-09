@@ -1,5 +1,3 @@
---conf.lua dont touch this one! config.lua is better
-
 function love.conf(t)
     t.title = "LovelyFE"                             -- The title of the window the game is in (string)
     t.author = "K-Pot (theo.madet@gmail.com)"        -- The author of the game (string)

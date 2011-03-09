@@ -1,5 +1,7 @@
 --search.lua
 
+--search menu used to search games by name
+
 Gamestate.search = Gamestate.new()
 local st = Gamestate.search
 

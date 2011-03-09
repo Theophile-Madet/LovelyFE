@@ -1,5 +1,6 @@
 --imagesMenu.lua
 
+--a menu showing all images available (cabinet, controls, adverts...)
 
 Gamestate.imagesMenu = Gamestate.new()
 local st = Gamestate.imagesMenu
