@@ -31,6 +31,7 @@ function st:draw()
 	love.graphics.print("currentGame = " ..currentGame, 0, 15)
 	love.graphics.print("currentImage = " ..currentImage, 0, 30)
 	love.graphics.print(images[currentImage], 0, 45) --]]
+	
 	love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W)
 
 	--Print game names on the right
@@ -84,7 +85,7 @@ function loadGameImages(game, ...)
 	local name = game["name"]
 	for _, folder in ipairs{...} do
 		if game[folder] == nil then
-			local path = "MAME/"..folder.."/"..name
+			local path = pathToMame.."/"..folder.."/"..name
 			if love.filesystem.exists(path .. ".png") then
 				game[folder] = love.graphics.newImage(path..".png")
 			elseif love.filesystem.exists(path .. ".bmp") then
@@ -100,8 +101,8 @@ function launch(romName)
 	if romName == nil then
 		romName = gameList[currentGame]["name"]
 	end
-	--cmd = "mame.exe.lnk ".. romName
-	cmd = pathToMame .. "\\mame.exe " .. pathToMame .. "\\roms\\"..romName
+	--cmd = "mame.exe.lnk ".. romName --a shortcut is required for mame to be executed in his own folder, not in LövelyFe's.
+	cmd = ("cd " .. pathToMame .. " & mame.exe " .. romName)
 	print(cmd)
 	os.execute(cmd)
 end
