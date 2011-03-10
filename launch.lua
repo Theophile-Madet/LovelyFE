@@ -106,17 +106,6 @@ function load()
 		love.joystick.open(i)
 	end
 	
-	f = {}
-	f["next game"] = nextGame
-	f["previous game"] = previousGame
-	f["next letter"] = nextLetter
-	f["previous letter"] = previousLetter
-	f["next image"] = nextImage
-	f["previous image"] = previousImage
-	f["action"] = launch
-	f["menu/cancel"] = menu
-	f["search"] = search
-	f["exit"] = os.exit
 	timer = love.timer.getTime()
 	timeLimit = 0.2
 end

@@ -124,7 +124,7 @@ function st:keyreleased(key, unicode)
 	end
 end
 
-function serialize(o) --"stolen" from Lua book page 112
+local function serialize(o) --"stolen" from Lua book page 112
 	if type(o) == "number" then
 		file:write(o)
 	elseif type(o) == "string" then
@@ -142,7 +142,7 @@ function serialize(o) --"stolen" from Lua book page 112
 	end
 end
 
-function deepcopy(object)
+local function deepcopy(object)
     local lookup_table = {}
     local function _copy(object)
         if type(object) ~= "table" then

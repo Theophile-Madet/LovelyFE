@@ -14,6 +14,9 @@ local unavailable
 local game
 local oldState
 
+local treatInput
+local goToImageDetail
+
 function st:enter(in_oldState)
 	oldState = in_oldState
 	if selectedSquare == nil then
@@ -205,36 +208,38 @@ end
 
 function st:joystickpressed(joystick, button)
 	local input = controools[joystick][button]
-	if input == "menu/cancel" then
-		Gamestate.switch(Gamestate.menu)
-	elseif input == "action" then
-		goToImageDetail()
-	elseif input == "next game" then 
-		selected = selected + 1 
-	elseif input == "previous game" then
-		selected = selected - 1
-	elseif input == "next letter" then
-		selected = selected + 3
-	elseif input == "previous letter" then
-		selected = selected - 3
-	end
-	
-	if selected > 9 then
-		selected = selected % 9
-	end
-	if selected == 0 then
-		selected = 9
+	if input ~= nil then
+		treatInput(input)
 	end
 end
 
 function st:keypressed(key, unicode)
 	local input = controools["keyboard"][key]
+	if input ~= nil then
+		treatInput(input)
+	end
+end
+
+function st:update(dt)
+	local input
+	for i=0,(nbJoy-1) do
+		for j=0,joys[i]["nbHats"]-1 do
+			input = controools[i][love.joystick.getHat(i,j)]
+			if input ~= nil and input ~= joys[i]["lastInput"] then
+				treatInput(input)
+			end
+			joys[i]["lastInput"] = input
+		end
+	end
+end
+
+treatInput = function(input)
 	if input == "menu/cancel" then
 		Gamestate.switch(Gamestate.menu)
 	elseif input == "action" then
 		goToImageDetail()
-	elseif input == "next game" then
-		selected = selected + 3
+	elseif input == "next game" then 
+		selected = selected + 3 
 	elseif input == "previous game" then
 		selected = selected - 3
 	elseif input == "next letter" then
@@ -243,40 +248,15 @@ function st:keypressed(key, unicode)
 		selected = selected - 1
 	end
 	
-	if selected > 9 or selected < 0 then
+	if selected > 9 then
 		selected = selected % 9
 	end
-	if selected == 0 then
+	if selected <= 0 then
 		selected = 9
 	end
 end
 
-function st:update(dt)
-	for i=0,(nbJoy-1) do
-		for j=0,joys[i]["nbHats"]-1 do
-			local input = controools[i][love.joystick.getHat(i,j)]
-			if input == "next game" and joys[i]["lastInput"] ~= input then
-				selected = selected + 3
-			elseif input == "previous game" and joys[i]["lastInput"] ~= input then
-				selected = selected - 3
-			elseif input == "next letter" and joys[i]["lastInput"] ~= input then
-				selected = selected + 1
-			elseif input == "previous letter" and joys[i]["lastInput"] ~= input then
-				selected = selected - 1
-			end
-			
-			joys[i]["lastInput"] = input
-			if selected > 9 or selected < 0 then
-				selected = selected % 9
-			end
-			if selected == 0 then
-				selected = 9
-			end
-		end
-	end
-end
-
-function goToImageDetail()
+goToImageDetail = function()
 	local image
 	local x,y
 	

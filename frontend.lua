@@ -13,6 +13,13 @@ require "imagesMenu"
 require "menu"
 require "search"
 
+local nextGame
+local previousGame
+local nextLetter
+local previousLetter
+local treatInput
+local menu
+local emptyGameImages
 
 function st:draw()
 	local game = gameList[currentGame]
@@ -23,8 +30,8 @@ function st:draw()
 	--[[ love.graphics.print(xml.find(game, "description")[1], 0, 0)
 	love.graphics.print("currentGame = " ..currentGame, 0, 15)
 	love.graphics.print("currentImage = " ..currentImage, 0, 30)
-	love.graphics.print(images[currentImage], 0, 45)
-	love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W) --]]
+	love.graphics.print(images[currentImage], 0, 45) --]]
+	love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W)
 
 	--Print game names on the right
 	love.graphics.print(xml.find(gameList[currentGame-2], "description")[1], (1300/1600)*W, (550/1200)*H, -0.05)
@@ -38,8 +45,9 @@ function st:draw()
 end
 
 function st:keypressed(key, unicode)
-	if controools["keyboard"][key] ~= nil then
-		f[controools["keyboard"][key]]()
+	local input = controools["keyboard"][key]
+	if  input ~= nil then
+		treatInput(input)
 	elseif key == "escape" then
 		os.exit()
 	end
@@ -49,8 +57,9 @@ function st:update(dt)
 	for i=0,(nbJoy-1) do
 		for j=0,joys[i]["nbHats"]-1 do
 			if love.joystick.getHat(i,j) ~= "c" then
-				if f[controools[i][love.joystick.getHat(i,j)]] ~= nil then
-					f[controools[i][love.joystick.getHat(i,j)]]()
+				local input = controools[i][love.joystick.getHat(i,j)]
+				if input ~= nil then
+					treatInput(input)
 				end
 			end
 		end
@@ -65,8 +74,9 @@ function st:update(dt)
 end
 
 function st:joystickpressed(joystick, button)
-	if f[controools[joystick][button] ] ~= nil then
-		f[controools[joystick][button] ]()
+	local input = controools[joystick][button]
+	if input ~= nil then
+		treatInput(input)
 	end
 end
 
@@ -86,24 +96,17 @@ function loadGameImages(game, ...)
 	end
 end
 
-function emptyGameImages(game) --remove some images from memory
-	print("emptying "..game["name"])
-	for _, image in ipairs(images) do
-		game[image]=nil
-	end
-	collectgarbage()
-end
-
 function launch(romName)
 	if romName == nil then
 		romName = gameList[currentGame]["name"]
 	end
-	cmd = "mame.exe.lnk ".. romName
+	--cmd = "mame.exe.lnk ".. romName
+	cmd = pathToMame .. "\\mame.exe " .. pathToMame .. "\\roms\\"..romName
 	print(cmd)
 	os.execute(cmd)
 end
 
-function nextGame()
+nextGame = function()
 	if love.timer.getTime() - timer > timeLimit then
 		currentGame = currentGame + 1
 		if currentGame-5 ~= 0 then
@@ -119,7 +122,7 @@ function nextGame()
 	love.draw()
 end
 
-function previousGame()
+previousGame = function()
 	if love.timer.getTime() - timer > timeLimit then
 		currentGame = currentGame - 1
 		if currentGame < 1 then currentGame = #gameList end
@@ -132,7 +135,7 @@ function previousGame()
 	love.draw()
 end
 
-function previousLetter()
+previousLetter = function()
 	oldGame = currentGame
 	if love.timer.getTime() - timer > timeLimit then
 		if string.sub(xml.find(gameList[currentGame], "description")[1],1) == "a" then
@@ -163,7 +166,7 @@ function previousLetter()
 	love.draw()
 end
 
-function nextLetter()
+nextLetter = function()
 	oldGame = currentGame
 	if love.timer.getTime() - timer > timeLimit then
 		firstLetterCode = string.byte(string.lower(xml.find(gameList[currentGame], "description")[1]), 1)
@@ -178,26 +181,45 @@ function nextLetter()
 	love.draw()
 end
 
-function menu()
+menu = function()
 	Gamestate.switch(Gamestate.menu)
 end
 
+treatInput = function(input)
+	if     input == "next game"       then nextGame()
+	elseif input == "previous game"   then previousGame()
+	elseif input == "next letter"     then nextLetter()
+	elseif input == "previous letter" then previousLetter()
+	elseif input == "action"          then launch()
+	elseif input == "menu/cancel"     then menu()
+	elseif input == "exit"            then os.exit()
+	end
+end
+
+emptyGameImages =  function(game) --remove some images from memory
+	print("emptying "..game["name"])
+	for _, image in ipairs(images) do
+		game[image]=nil
+	end
+	collectgarbage()
+end
+
 function getInfo()
-	info = "Année : "
+	info = "Year : "
 	info = info .. xml.find(gameList[currentGame], "year")[1] .. "\n"
-	info = info .. "Développeur : " .. xml.find(gameList[currentGame], "manufacturer")[1] .. "\n"
+	info = info .. "Developper : " .. xml.find(gameList[currentGame], "manufacturer")[1] .. "\n"
 	display = xml.find(gameList[currentGame], "display")
 	if display["width"] ~= nil and display["height"] ~= nil then
-		info = info .. "Résolution : " .. display["width"].."*"..display["height"] .."\n"
+		info = info .. "Resolution : " .. display["width"].."*"..display["height"] .."\n"
 	end
 	input = xml.find(gameList[currentGame], "input")
-	info = info .. "Nombre de joueurs : " .. input["players"] .. "\n"
+	info = info .. "Number of Players : " .. input["players"] .. "\n"
 	if input["buttons"] ~= nil then
-		info = info .. "Nombre de boutons : " .. input["buttons"] .. "\n"
+		info = info .. "Number of buttons : " .. input["buttons"] .. "\n"
 	else
-		info = info .. "Nombre de boutons : 0\n"
+		info = info .. "Number of buttons : 0\n"
 	end
-	info = info .. "Qualité de l'émulation : " .. xml.find(gameList[currentGame], "driver")["status"]
+	info = info .. "Emulation quality : " .. xml.find(gameList[currentGame], "driver")["status"]
 	return info
 end
 
@@ -247,4 +269,3 @@ function drawBackground() --separated from st:draw because reused several times 
 	
 	love.graphics.draw(dkface, (1343/1600)*W, (180/1200)*H, 0, W/1600)
 end
-

@@ -8,6 +8,7 @@ local st = Gamestate.search
 local selected
 local searchString
 local resultString
+local searchList
 local numberOfSelectable
 local typeOfSelected
 local squareWidth, squareHeight
@@ -18,6 +19,8 @@ local rectScaleX, rectScaleY
 local numberOfRectangles
 local numberOfSelectable
 local oldState
+
+local treatInput
 
 function st:enter(in_oldState)
 	oldState = in_oldState
@@ -90,24 +93,51 @@ function st:leave()
 end
 
 function st:update(dt)
-	if typeOfSelected == "letter" then
-		for i=0,(nbJoy-1) do
-			for j=0,joys[i]["nbHats"]-1 do
-				local input = controools[i][love.joystick.getHat(i,j)]
-				if input == "next game" and joys[i]["lastInput"] ~= input then
-					selected = selected + 10
-				elseif input == "previous game" and joys[i]["lastInput"] ~= input then
-					selected = selected - 10
-				elseif input == "next letter" and joys[i]["lastInput"] ~= input then
-					selected = selected + 1
-				elseif input == "previous letter" and joys[i]["lastInput"] ~= input then
-					selected = selected - 1
-				end
-				
-				joys[i]["lastInput"] = input
-				
+	for i=0,(nbJoy-1) do
+		for j=0,joys[i]["nbHats"]-1 do
+			local input = controools[i][love.joystick.getHat(i,j)]
+			if input ~= nil and input ~= joys[i]["lastInput"] then
+				treatInput(input)
 			end
+			joys[i]["lastInput"] = input
 		end
+	end		
+end
+
+function st:joystickpressed(joystick, button)
+	local input = controools[joystick][button]
+	if input ~= nil then
+		treatInput(input)
+	end
+end
+
+function st:keypressed(key, unicode)
+	local input = controools["keyboard"][key]
+	if input ~= nil then
+		treatInput(input)
+	end
+end
+
+treatInput = function(input)
+	--"next game" and "previous game" are supposed to be mapped to down/up and "next/previous letter" to left/right
+	--there should be a better, more general solution
+	if input == "menu/cancel" then
+		Gamestate.switch(oldState)
+	end
+	
+	if typeOfSelected == "letter" then
+		if input == "next game" then
+			selected = selected + 10
+		elseif input == "previous game" then
+			selected = selected - 10
+		elseif input == "next letter" then
+			selected = selected + 1
+		elseif input == "previous letter" then
+			selected = selected - 1
+		elseif input == "action" then
+			updateSearchList()
+		end
+		
 		if selected > 30 then
 			typeOfSelected = "game"
 			selected = 1
@@ -116,17 +146,13 @@ function st:update(dt)
 			selected = numberOfRectangles
 		end
 	elseif typeOfSelected == "game" then
-		for i=0,(nbJoy-1) do
-			for j=0,joys[i]["nbHats"]-1 do
-				input = controools[i][love.joystick.getHat(i,j)]
-				if input == "next game" and joys[i]["lastInput"] ~= input then
-					selected = selected + 1
-				elseif input == "previous game" and joys[i]["lastInput"] ~= input then
-					selected = selected - 1
-				end
-				
-				joys[i]["lastInput"] = input
-
+		if input == "next game" then
+			selected = selected + 1
+		elseif input == "previous game" then
+			selected = selected - 1
+		elseif input == "action" then
+			if searchList[selected] ~= nil then
+				launch(gameList[searchList[selected] ]["name"])
 			end
 		end
 		if selected > numberOfRectangles then
@@ -139,67 +165,7 @@ function st:update(dt)
 	end
 end
 
-function st:joystickpressed(joystick, button)
-	local input = controools[joystick][button]
-	if input == "menu/cancel" then
-		Gamestate.switch(oldState)
-	elseif input == "action" then
-		if typeOfSelected == "letter" then
-			updateSearchString()
-		elseif typeOfSelected == "game" then
-			if searchList[selected] ~= nil then
-				launch(gameList[searchList[selected]]["name"])
-			end
-		end
-	elseif input == "next game" then
-		selected = selected + 10
-	elseif input == "previous game" then
-		selected = selected - 10
-	elseif input == "next letter" then
-		selected = selected + 1
-	elseif input == "previous letter" then
-		selected = selected - 1
-	end
-	
-	if selected > 30 or selected < 0 then
-		selected = selected % 30
-	end
-	if selected == 0 then
-		selected = 30
-	end
-end
-
-function st:keypressed(key, unicode)
-	local input = controools["keyboard"][key]
-	if input == "menu/cancel" then
-		Gamestate.switch(oldState)
-	elseif input == "action" then
-		if typeOfSelected == "letter" then
-			updateSearchString()
-		elseif typeOfSelected == "game" then
-			if searchList[selected] ~= nil then
-				launch(gameList[searchList[selected]]["name"])
-			end
-		end
-	elseif input == "next game" then
-		selected = selected + 10
-	elseif input == "previous game" then
-		selected = selected - 10
-	elseif input == "next letter" then
-		selected = selected + 1
-	elseif input == "previous letter" then
-		selected = selected - 1
-	end
-	
-	if selected > 30 or selected < 0 then
-		selected = selected % 30
-	end
-	if selected == 0 then
-		selected = 30
-	end
-end
-
-function updateSearchString()
+function updateSearchList()
 	searchList = {}
 	searchString = searchString .. string.char(string.byte('a')+selected-1)
 	for k in pairs(gameList) do
@@ -208,5 +174,3 @@ function updateSearchString()
 		end
 	end
 end
-
-

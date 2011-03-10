@@ -144,7 +144,7 @@ function st:draw()
 	end
 end
 
-function drawPanel(rom, romList)
+local function drawPanel(rom, romList)
 	local romData = xml.find(romList, "game", "name", rom)
 	if romData == nil then
 		print("Game data not found : "..rom)

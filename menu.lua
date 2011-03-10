@@ -17,6 +17,8 @@ local oldState
 --local squaresPerLine = 3
 --local numberOfLines = math.ceil(numberOfSquares/squaresPerLine)
 
+local treatInput
+
 function st:enter(in_oldState, in_old, in_new)
 	oldState = in_oldState
 	if selectedSquare == nil then
@@ -66,22 +68,8 @@ function st:update(dt)
 	for i=0,(nbJoy-1) do
 		for j=0,joys[i]["nbHats"]-1 do
 			local input = controools[i][love.joystick.getHat(i,j)]
-			if input == "next game" and joys[i]["lastInput"] ~= input then
-				selected = selected + 3
-			elseif input == "previous game" and joys[i]["lastInput"] ~= input then
-				selected = selected - 3
-			elseif input == "next letter" and joys[i]["lastInput"] ~= input then
-				selected = selected + 1
-			elseif input == "previous letter" and joys[i]["lastInput"] ~= input then
-				selected = selected - 1
-			end
-			
-			joys[i]["lastInput"] = input
-			if selected > 3 or selected < 0 then
-				selected = selected % 3
-			end
-			if selected == 0 then
-				selected = 3
+			if input ~= nil and input ~= joys[i]["lastInput"] then
+				treatInput(input)
 			end
 		end
 	end
@@ -89,34 +77,19 @@ end
 
 function st:keypressed(key, unicode)
 	local input = controools["keyboard"][key]
-	if input == "menu/cancel" then
-		Gamestate.switch(Gamestate.frontend)
-	elseif input == "action" then
-		if selected == 1 then
-			Gamestate.switch(Gamestate.imagesMenu)
-		elseif selected == 2 then
-			Gamestate.switch(Gamestate.search)
-		end
-	elseif input == "next game" then
-		selected = selected + 3
-	elseif input == "previous game" then
-		selected = selected - 3
-	elseif input == "next letter" then
-		selected = selected + 1
-	elseif input == "previous letter" then
-		selected = selected - 1
-	end
-	
-	if selected > 3 or selected < 0 then
-		selected = selected % 3
-	end
-	if selected == 0 then
-		selected = 3
+	if input ~= nil then
+		treatInput(input)
 	end
 end
 
 function st:joystickpressed(joystick, button)
 	local input = controools[joystick][button]
+	if input ~= nil then
+		treatInput(input)
+	end
+end
+
+treatInput = function(input)
 	if input == "menu/cancel" then
 		Gamestate.switch(Gamestate.frontend)
 	elseif input == "action" then
@@ -126,19 +99,19 @@ function st:joystickpressed(joystick, button)
 			Gamestate.switch(Gamestate.search)
 		end
 	elseif input == "next game" then 
-		selected = selected + 1 
+		selected = selected + 3 
 	elseif input == "previous game" then
-		selected = selected - 1
-	elseif input == "next letter" then
-		selected = selected + 3
-	elseif input == "previous letter" then
 		selected = selected - 3
+	elseif input == "next letter" then
+		selected = selected + 1
+	elseif input == "previous letter" then
+		selected = selected - 1
 	end
 	
 	if selected > 3 then
 		selected = selected % 3
 	end
-	if selected == 0 then
+	if selected <= 0 then
 		selected = 3
 	end
 end
