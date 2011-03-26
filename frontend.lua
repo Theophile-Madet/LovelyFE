@@ -12,6 +12,7 @@ require "previousLetter"
 require "imagesMenu"
 require "menu"
 require "search"
+require "xml"
 
 local nextGame
 local previousGame
@@ -35,11 +36,11 @@ function st:draw()
 	love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W)
 
 	--Print game names on the right
-	love.graphics.print(xml.find(gameList[currentGame-2], "description")[1], (1300/1600)*W, (550/1200)*H, -0.05)
-	love.graphics.print(xml.find(gameList[currentGame-1], "description")[1], (1280/1600)*W, (690/1200)*H, 0.05)
-	love.graphics.print(xml.find(gameList[currentGame], "description")[1], (1300/1600)*W, (835/1200)*H, -0.05)
-	love.graphics.print(xml.find(gameList[currentGame+1], "description")[1], (1280/1600)*W, (950/1200)*H, 0.05)
-	love.graphics.print(xml.find(gameList[currentGame+2], "description")[1], (1280/1600)*W, (1140/1200)*H)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-2), (1300/1600)*W, (550/1200)*H, -0.05)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-1), (1280/1600)*W, (690/1200)*H, 0.05)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame), (1300/1600)*W, (835/1200)*H, -0.05)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+1), (1280/1600)*W, (950/1200)*H, 0.05)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+2), (1280/1600)*W, (1140/1200)*H)
 	
 	love.graphics.draw(tonneaux[1], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)
 	
@@ -82,7 +83,7 @@ function st:joystickpressed(joystick, button)
 end
 
 function loadGameImages(game, ...)
-	local name = game["name"]
+	local name = getName(game)
 	for _, folder in ipairs{...} do
 		if game[folder] == nil then
 			local path = pathToMame.."/"..folder.."/"..name
@@ -98,10 +99,6 @@ function loadGameImages(game, ...)
 end
 
 function launch(romName)
-	if romName == nil then
-		romName = gameList[currentGame]["name"]
-	end
-	--cmd = "mame.exe.lnk ".. romName --a shortcut is required for mame to be executed in his own folder, not in LövelyFe's.
 	cmd = ("cd " .. pathToMame .. " & mame.exe " .. romName)
 	print(cmd)
 	os.execute(cmd)
@@ -139,25 +136,19 @@ end
 previousLetter = function()
 	oldGame = currentGame
 	if love.timer.getTime() - timer > timeLimit then
-		if string.sub(xml.find(gameList[currentGame], "description")[1],1) == "a" then
-				currentGame = 1
-		end
-		firstLetterCode = string.byte(string.lower(xml.find(gameList[currentGame], "description")[1]), 1)
-		while string.byte(string.lower(xml.find(gameList[currentGame], "description")[1]),1) >= (firstLetterCode) do
+		local gameName = getDescriptionOfNumber(gameList, currentGame)
+		local firstLetter = string.sub(gameName, 1, 1)
+		--Going to last game of previous letter
+		while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
 			currentGame = currentGame - 1
-			if currentGame < 1 then 
-				currentGame = #gameList
-				break
-			end
 		end
-		firstLetterCode = string.byte(string.lower(xml.find(gameList[currentGame], "description")[1]), 1)
-		while string.byte(string.lower(xml.find(gameList[currentGame], "description")[1]),1) == (firstLetterCode) do
+		gameName = getDescriptionOfNumber(gameList, currentGame)
+		firstLetter = string.sub(gameName, 1, 1)
+		--Going to last game of previous letter (just before the first game of this letter)
+		while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
 			currentGame = currentGame - 1
-			if currentGame < 1 then 
-				currentGame = #gameList
-				break
-			end
 		end
+		--Going to aimed game
 		currentGame = currentGame + 1
 		loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
 		timer = love.timer.getTime()
@@ -170,8 +161,9 @@ end
 nextLetter = function()
 	oldGame = currentGame
 	if love.timer.getTime() - timer > timeLimit then
-		firstLetterCode = string.byte(string.lower(xml.find(gameList[currentGame], "description")[1]), 1)
-		while xml.find(gameList[currentGame], "description")~=nil and string.byte(string.lower(xml.find(gameList[currentGame], "description")[1]),1) == firstLetterCode do
+		local gameName = getDescriptionOfNumber(gameList, currentGame)
+		local firstLetter = string.sub(gameName, 1, 1)
+		while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
 			currentGame = currentGame + 1
 		end
 		loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
@@ -198,7 +190,7 @@ treatInput = function(input)
 end
 
 emptyGameImages =  function(game) --remove some images from memory
-	print("emptying "..game["name"])
+	print("emptying " .. getName(game))
 	for _, image in ipairs(images) do
 		game[image]=nil
 	end
@@ -206,21 +198,22 @@ emptyGameImages =  function(game) --remove some images from memory
 end
 
 function getInfo()
+	local game = getGameByNumber(gameList, currentGame)
 	info = "Year : "
-	info = info .. xml.find(gameList[currentGame], "year")[1] .. "\n"
-	info = info .. "Developper : " .. xml.find(gameList[currentGame], "manufacturer")[1] .. "\n"
-	display = xml.find(gameList[currentGame], "display")
-	if display["width"] ~= nil and display["height"] ~= nil then
-		info = info .. "Resolution : " .. display["width"].."*"..display["height"] .."\n"
+	info = info .. getTagValue(game, "year") .. "\n"
+	info = info .. "Developper : " .. getTagValue(game, "manufacturer") .. "\n"
+	if getAttributeOfTag(game, "display", "width") ~= nil and getAttributeOfTag(game, "display", "height") ~= nil then
+		info = info .. "Resolution : " .. getAttributeOfTag(game, "display", "width").."*"..getAttributeOfTag(game, "display", "height")
 	end
-	input = xml.find(gameList[currentGame], "input")
-	info = info .. "Number of Players : " .. input["players"] .. "\n"
-	if input["buttons"] ~= nil then
-		info = info .. "Number of buttons : " .. input["buttons"] .. "\n"
+	if getAttributeOfTag(game, "input", "players") ~= nil then
+		info = info .. "Number of Players : " .. getAttributeOfTag(game, "input", "players") .. "\n"
+	end
+	if getAttributeOfTag(game, "input", "buttons") ~= nil then
+		info = info .. "Number of buttons : " .. getAttributeOfTag(game, "input", "buttons") .. "\n"
 	else
 		info = info .. "Number of buttons : 0\n"
 	end
-	info = info .. "Emulation quality : " .. xml.find(gameList[currentGame], "driver")["status"]
+	info = info .. "Emulation quality : " .. getAttributeOfTag(game, "driver", "status")
 	return info
 end
 

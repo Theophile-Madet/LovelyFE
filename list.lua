@@ -1,8 +1,8 @@
 --list.lua
 
---Used to create a clean XML file containing only the available games and the useful informations.
+--Converts MAME list of emulated games from XML to Lua, then filter unavailable games and unused infos.
 
-require "LuaXml"
+require "xml"
 require "config"
 
 Gamestate.list = Gamestate.new()
@@ -11,82 +11,58 @@ local st = Gamestate.list
 function st:enter()
 	print("Asking mame about all games...")
 	os.execute(pathToMame .. "\\mame.exe -listxml > fullList.xml")
-	--the generated file has a "doctype" stuff at the beginning that makes LuaXml crash, so we filter it.
+	
 	print("Reading result...")
-	io.input("fullList.xml")
-	local currentLine
-	while currentLine ~= "" do
-		currentLine = io.read("*line")
-	end
-	local fullListXml = xml.eval(io.read("*all"))
+	local xmlFile = io.open("fullList.xml")
+	local xmlTable = xmlParse(xmlFile:read("*all"))
 
 	print("Creating list of all roms in " .. pathToMame .. "/roms")
 	local roms = love.filesystem.enumerate(pathToMame.."/roms")
 
 	--now we compare the two list to delete the unavailable games
 	print("Getting info for all roms...")
-	local availableList = {}
-	for _, currentRom in ipairs(roms) do
-		currentRom = string.gsub(currentRom, ".zip", "")
-		availableList[currentRom] = xml.find(fullListXml, "game", "name", currentRom)
-		if availableList[currentRom] == nil then
-			print("    Game not found : " .. currentRom)
-		else
-			print("    Game found : " .. currentRom .. " : " .. xml.find(availableList[currentRom], "description")[1])
-		end
+	local tempXmlTable = {}
+	for _, rom in ipairs(roms) do
+		rom = string.gsub(rom, ".zip", "")
+		tempXmlTable[#tempXmlTable+1] = getGameByName(xmlTable, rom)
 	end
+	xmlTable = tempXmlTable
+	tempXmlTable = nil
 	
 	print("Deleting unused infos")
-	availableList = filterList(availableList)
+	availableList = filterList(xmlTable)
 	print("Removing unused roms")
-	removeUnusedRoms(availableList)
+	removeUnusedRoms(xmlTable)
 	print("Customizing list")
-	custom(availableList)
+	custom(xmlTable)
 	print("Sorting list")
-	local n = 1
-	local availableListCopy = {}
-	for i in pairs(availableList) do -- replace all string index with intergers so we can use table.sort
-		availableListCopy[n] = availableList[i]
-		n=n+1
-	end
-	table.sort(availableListCopy, gameSort)
+	table.sort(xmlTable, gameSort)
 	
-	print("Saving infos in availableList.xml")
-	xml.save(availableListCopy, "availableList.xml")
+	print("Saving infos in availableList.lua")
+	local file = io.open("availableList.lua", "w")
+	if file == nil then
+		error("Could not create availableList.lua")
+	end
+	file:write("gameList = ")
+	serialize(xmlTable, file)
+	file:close()
 	print("done")
 end
 
-function removeUnusedRoms(L)
-	for _, rom in ipairs(romsNotToInclude) do
-		for k in pairs(L) do
-			if k == rom then
-				L[k] = nil
-				print("    Removing " .. rom)
+function removeUnusedRoms(xmlTable)
+	for k, rom in pairs(xmlTable) do
+		romName = getName(rom)
+		for _, v in pairs(romsNotToInclude) do
+			if romName == v then
+				xmlTable[k] = nil
+				print("    Removing " .. romName)
 			end
 		end
 	end
 end
 
-function filterList(L) --remove unecessary infos like roms, chips...
-	local shortL = xml.new()
-	for k in pairs(L) do
-		shortL[k] = xml.new()
-		xml.tag(shortL[k], xml.tag(L[k]))
-		for k2 in pairs(L[k]) do
-			if(type(k2) == "string") then
-				shortL[k][k2] = L[k][k2]
-			else
-				tag = xml.tag(L[k][k2])
-				if tag == "description" or
-				   tag == "year" or
-				   tag == "manufacturer" or
-				   tag == "display" or
-				   tag == "input" or
-				   tag == "driver" then
-					xml.append(shortL[k], L[k][k2])
-				end
-			end
-		end
+function filterList(xmlTable) --remove unecessary infos like roms, chips...
+	for _, game in pairs(xmlTable) do
+		removeTag(game, "rom", "dipswitch", "configuration", "chip", "sound")
 	end
-	return shortL
 end

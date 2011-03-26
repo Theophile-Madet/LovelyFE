@@ -3,3 +3,4 @@ MAME/
 *.xml
 *.txt
 saved.lua
+availableList.lua

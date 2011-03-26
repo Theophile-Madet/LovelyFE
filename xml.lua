@@ -1,20 +1,35 @@
 --xml.lua
 
 function getGameByNumber(tbl, index)
-	if tbl[2][index] == nil then
+	if tbl[index] == nil then
 		error("No game at index " .. index .. " in getGameByNumber")
 	end
 	
-	return tbl[2][index]
+	return tbl[index]
 end
 
 function getGameByName(tbl, name)
-	for _,v in pairs(tbl[2]) do
+	for _,v in pairs(tbl) do
 		if v["xarg"] ~= nil and v["xarg"]["name"] == name then
 			return v
 		end
 	end
 	error("No game with name " .. name)
+end
+
+function getName(game)
+	if game == nil then
+		error("Sending nil as game to " .. debug.getinfo(1)["name"])
+	end
+	return game["xarg"]["name"]
+end
+
+function getNameOfNumber(xmlTable, index)
+	return getName(getGameByNumber(xmlTable, index))
+end
+
+function getDescriptionOfNumber(xmlTable, index)
+	return getTagValue(getGameByNumber(xmlTable, index), "description")
 end
 
 function setTagValue(game, tag, value)
@@ -45,7 +60,14 @@ function getTagValue(game, tag)
 	end
 	
 	error("Tag not found : " .. tag)
-	
+end
+
+function getAttributeOfTag(game, tag, attribute)
+	for _, v in pairs(game) do
+		if v["label"] == tag then
+			return v["xarg"][attribute]
+		end
+	end
 end
 
 function removeTag(game, ...)
@@ -100,10 +122,10 @@ function xmlParse(s)
 	if #stack > 1 then
 	  error("unclosed "..stack[stack.n].label)
 	end
-	return stack[1]
+	return stack[1][2] --default function returns stack[1], stack[1][2] removes some unused stuff
 end
 	
-local function parseargs(s)
+function parseargs(s)
 	local arg = {}
 	string.gsub(s, "(%w+)=([\"'])(.-)%2", function (w, _, a)
 	arg[w] = a

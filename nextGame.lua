@@ -41,23 +41,23 @@ function st:draw()
 	dx = (1331-1300)*d
 	dy = (340-550)*d
 	dr = (0-(-0.05))*d
-	love.graphics.print(xml.find(gameList[currentGame-3], "description")[1], ((1300+dx)/1600)*W, ((550+dy)/1200)*H, -0.05+dr)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-3), ((1300+dx)/1600)*W, ((550+dy)/1200)*H, -0.05+dr)
 	dx = (1300-1280)*d
 	dy = (550-690)*d
 	dr = (-0.05-0.05)*d
-	love.graphics.print(xml.find(gameList[currentGame-2], "description")[1], ((1280+dx)/1600)*W, ((690+dy)/1200)*H, 0.05+dr)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-2), ((1280+dx)/1600)*W, ((690+dy)/1200)*H, 0.05+dr)
 	dx = (1280-1300)*d
 	dy = (690-835)*d
 	dr = (0.05-(-0.05))*d
-	love.graphics.print(xml.find(gameList[currentGame-1], "description")[1], ((1300+dx)/1600)*W, ((835+dy)/1200)*H, -0.05+dr)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-1), ((1300+dx)/1600)*W, ((835+dy)/1200)*H, -0.05+dr)
 	dx = (1300-1280)*d
 	dy = (835-950)*d
 	dr = (-0.05-0.05)*d
-	love.graphics.print(xml.find(gameList[currentGame], "description")[1], ((1280+dx)/1600)*W, ((950+dy)/1200)*H, 0.05+dr)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame), ((1280+dx)/1600)*W, ((950+dy)/1200)*H, 0.05+dr)
 	dx = (1280-1300)*d
 	dy = (950-1140)*d
 	dr = (0.05)*d
-	love.graphics.print(xml.find(gameList[currentGame+1], "description")[1], (1280/1600)*W, ((1140+dy)/1200)*H, dr)
+	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+1), (1280/1600)*W, ((1140+dy)/1200)*H, dr)
 	
 	local numTonneau = math.ceil(timerAnimation*10) % 4 + 1
 	love.graphics.draw(tonneaux[numTonneau], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)

@@ -29,7 +29,8 @@ romsNotToInclude ={ --can be used for bios for example
 function custom(L) --used to customize game names
 	local function f(name, description)
 		print("	Changing " .. name .. " description to " .. description)
-		xml.find(L[name], "description")[1] = description
+		local game = getGameByName(L, name)
+		setTagValue(game, "description", description)
 	end
 	f("1941", "1941 : Counter Attack")
 	f("1942", "1942")

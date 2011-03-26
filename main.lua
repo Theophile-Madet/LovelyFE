@@ -2,7 +2,6 @@
 
 require "config"
 require "HUMP/gamestate"
-require "LuaXml"
 
 function love.load(arg)
 	Gamestate.registerEvents()
@@ -30,7 +29,25 @@ function gameSort(A, B) --used in a few places to sort the game list
 	if B == nil then
 		return true
 	end
-	A = xml.find(A, "description")
-	B = xml.find(B, "description")
-	return string.lower(A[1]) < string.lower(B[1])
+	A = getTagValue(A, "description")
+	B = getTagValue(B, "description")
+	return string.lower(A) < string.lower(B)
+end
+
+function serialize(o, file) --"stolen" from Lua book page 112
+	if type(o) == "number" then
+		file:write(o)
+	elseif type(o) == "string" then
+		file:write(string.format("%q", o))
+	elseif type(o) == "table" then
+		file:write("{\n")
+		for k,v in pairs(o) do
+			file:write(" ["); serialize(k, file); file:write("] = ")
+			serialize(v, file)
+			file:write(",\n")
+		end
+		file:write("}\n")
+	else
+		error("cannot serialize a " .. type(o))
+	end
 end

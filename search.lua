@@ -82,7 +82,7 @@ function st:draw()
 		end
 		love.graphics.draw(square, (W/5)/2, H/5 + 3*space + 3*squareHeight + (i-1)*(rectangleHeight+space), 0, rectScaleX, rectScaleY)
 		if searchList[i] ~= nil then
-			love.graphics.print(xml.find(gameList[searchList[i]], "description")[1], (W/5)/2+space, H/5 + 3*space + 3*squareHeight + (i-1)*(rectangleHeight+space) + space)
+			love.graphics.print(getDescriptionOfNumber(gameList, searchList[i]), (W/5)/2+space, H/5 + 3*space + 3*squareHeight + (i-1)*(rectangleHeight+space) + space)
 		end
 	end
 	love.graphics.print(searchString, W/2 - (string.len(searchString)/2)*10, (H/5)/2 - 10)
@@ -152,7 +152,7 @@ treatInput = function(input)
 			selected = selected - 1
 		elseif input == "action" then
 			if searchList[selected] ~= nil then
-				launch(gameList[searchList[selected] ]["name"])
+				launch(getNameOfNumber(gameList, searchList[selected]))
 			end
 		end
 		if selected > numberOfRectangles then
@@ -169,7 +169,7 @@ function updateSearchList()
 	searchList = {}
 	searchString = searchString .. string.char(string.byte('a')+selected-1)
 	for k in pairs(gameList) do
-		if string.find(string.lower(xml.find(gameList[k], "description")[1]), searchString) ~= nil then
+		if string.find(string.lower(getDescriptionOfNumber(gameList, k)), searchString) ~= nil then
 			table.insert(searchList, k)
 		end
 	end

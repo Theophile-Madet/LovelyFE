@@ -19,17 +19,16 @@ function st:enter(in_oldState, in_old, in_new)
 	last = false
 	timerAnimation = 0
 	len = math.max(
-		string.len(xml.find(gameList[old-2], "description")[1]),
-		string.len(xml.find(gameList[old-1], "description")[1]),
-		string.len(xml.find(gameList[old], "description")[1]),
-		string.len(xml.find(gameList[old+1], "description")[1]),
-		string.len(xml.find(gameList[old+2], "description")[1]),
-		string.len(xml.find(gameList[new-2], "description")[1]),
-		string.len(xml.find(gameList[new-1], "description")[1]),
-		string.len(xml.find(gameList[new], "description")[1]),
-		string.len(xml.find(gameList[new+1], "description")[1]),
-		string.len(xml.find(gameList[new+2], "description")[1]))
-	print(len)
+		string.len(getDescriptionOfNumber(gameList, old-2)),
+		string.len(getDescriptionOfNumber(gameList, old-1)),
+		string.len(getDescriptionOfNumber(gameList, old)),
+		string.len(getDescriptionOfNumber(gameList, old+1)),
+		string.len(getDescriptionOfNumber(gameList, old+2)),
+		string.len(getDescriptionOfNumber(gameList, new-2)),
+		string.len(getDescriptionOfNumber(gameList, new-1)),
+		string.len(getDescriptionOfNumber(gameList, new)),
+		string.len(getDescriptionOfNumber(gameList, new+1)),
+		string.len(getDescriptionOfNumber(gameList, new+2)))
 end
 
 function st:update(dt)
@@ -50,37 +49,37 @@ function st:draw()
 	
 	local nameNew, nameOld
 	
-	nameNew = xml.find(gameList[new-2], "description")[1]
+	nameNew = getDescriptionOfNumber(gameList, new-2)
 	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = xml.find(gameList[old-2], "description")[1]
+	nameOld = getDescriptionOfNumber(gameList, old-2)
 	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
 	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
 	love.graphics.print(toprint, (1300/1600)*W, (550/1200)*H, -0.05)
 	
-	nameNew = xml.find(gameList[new-1], "description")[1]
+	nameNew = getDescriptionOfNumber(gameList, new-1)
 	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = xml.find(gameList[old-1], "description")[1]
+	nameOld = getDescriptionOfNumber(gameList, old-1)
 	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
 	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
 	love.graphics.print(toprint, (1280/1600)*W, (690/1200)*H, 0.05)
 	
-	nameNew = xml.find(gameList[new], "description")[1]
+	nameNew = getDescriptionOfNumber(gameList, new)
 	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = xml.find(gameList[old], "description")[1]
+	nameOld = getNameOfNumber(gameList, old)
 	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
 	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
 	love.graphics.print(toprint, (1300/1600)*W, (835/1200)*H, -0.05)
 	
-	nameNew = xml.find(gameList[new+1], "description")[1]
+	nameNew = getDescriptionOfNumber(gameList, new+1)
 	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = xml.find(gameList[old+1], "description")[1]
+	nameOld = getDescriptionOfNumber(gameList, old+1)
 	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
 	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
 	love.graphics.print(toprint, (1280/1600)*W, (950/1200)*H, 0.05)
 	
-	nameNew = xml.find(gameList[new+2], "description")[1]
+	nameNew = getDescriptionOfNumber(gameList, new+2)
 	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = xml.find(gameList[old+2], "description")[1]
+	nameOld = getDescriptionOfNumber(gameList, old+2)
 	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
 	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
 	love.graphics.print(toprint, (1280/1600)*W, (1140/1200)*H)

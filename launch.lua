@@ -64,9 +64,9 @@ function st:leave()
 end
 
 function load()
+	dofile("availableList.lua") -- gives a gameList table with all games in
+	--table.sort(gameList, gameSort)
 	math.randomseed(os.time())
-	gameList = xml.load("availableList.xml")
-	table.sort(gameList, gameSort)
 	math.random(#gameList) -- it is said that the first random numbers aren't really random.
 	math.random(#gameList)
 	math.random(#gameList)
@@ -75,7 +75,6 @@ function load()
 	currentGame = math.random(#gameList)
 	currentImage = 13
 	images={"Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title"}
-	gameList[0] = nil --removed to avoid specific case tests when changing games
 	
 	mt = {}
 	mt.__index = function(o, key)

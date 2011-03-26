@@ -13,6 +13,7 @@ local X, Y
 local unavailable
 local game
 local oldState
+local lastInputTime = 0
 --local numberOfSquares = 3
 --local squaresPerLine = 3
 --local numberOfLines = math.ceil(numberOfSquares/squaresPerLine)
@@ -98,14 +99,20 @@ treatInput = function(input)
 		elseif selected == 2 then
 			Gamestate.switch(Gamestate.search)
 		end
-	elseif input == "next game" then 
-		selected = selected + 3 
-	elseif input == "previous game" then
-		selected = selected - 3
-	elseif input == "next letter" then
-		selected = selected + 1
-	elseif input == "previous letter" then
-		selected = selected - 1
+	elseif love.timer.getTime() - lastInputTime > 0.2 then
+		if input == input == "next game" then 
+			selected = selected + 3 
+			lastInputTime = love.timer.getTime()
+		elseif input == "previous game" then
+			selected = selected - 3
+			lastInputTime = love.timer.getTime()
+		elseif input == "next letter" then
+			selected = selected + 1
+			lastInputTime = love.timer.getTime()
+		elseif input == "previous letter" then
+			selected = selected - 1
+			lastInputTime = love.timer.getTime()
+		end
 	end
 	
 	if selected > 3 then

@@ -89,13 +89,13 @@ function st:keypressed(key, unicode)
 		if not love.keyboard.isDown("lshift") then
 			currentCommand = currentCommand + 1
 			if commands[currentCommand] == nil then
-				file = love.filesystem.newFile("saved.lua")
+				local file = love.filesystem.newFile("saved.lua")
 				if file == nil then os.exit() end
 				if not file:open('w') then os.exit() end
 				file:write("joys = ")
-				serialize(joys)
+				serialize(joys, file)
 				file:write("controools = ")
-				serialize(controls)
+				serialize(controls, file)
 				file:close()
 				message = "Config finished, you can now press escape"
 			else
@@ -121,24 +121,6 @@ function st:keyreleased(key, unicode)
 	if key == "lshift" and not love.keyboard.isDown("tab") then
 		controls["keyboard"][key] = commands["currentCommand"]
 		message = message.."KB"..key.." "
-	end
-end
-
-local function serialize(o) --"stolen" from Lua book page 112
-	if type(o) == "number" then
-		file:write(o)
-	elseif type(o) == "string" then
-		file:write(string.format("%q", o))
-	elseif type(o) == "table" then
-		file:write("{\n")
-		for k,v in pairs(o) do
-			file:write(" ["); serialize(k); file:write("] = ")
-			serialize(v)
-			file:write(",\n")
-		end
-		file:write("}\n")
-	else
-		error("cannot serialize a " .. type(o))
 	end
 end
 
