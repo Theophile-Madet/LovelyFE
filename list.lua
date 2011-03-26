@@ -39,10 +39,11 @@ function st:enter()
 	table.sort(xmlTable, gameSort)
 	
 	print("Saving infos in availableList.lua")
-	local file = io.open("availableList.lua", "w")
+	local file = love.filesystem.newFile("availableList.lua")
 	if file == nil then
 		error("Could not create availableList.lua")
 	end
+	file:open('w')
 	file:write("gameList = ")
 	serialize(xmlTable, file)
 	file:close()

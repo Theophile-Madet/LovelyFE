@@ -64,7 +64,7 @@ function st:leave()
 end
 
 function load()
-	dofile("availableList.lua") -- gives a gameList table with all games in
+	love.filesystem.load("availableList.lua")() -- gives a gameList table with all games in
 	--table.sort(gameList, gameSort)
 	math.randomseed(os.time())
 	math.random(#gameList) -- it is said that the first random numbers aren't really random.
@@ -99,7 +99,7 @@ function load()
 	tonneaux[4] = love.graphics.newImage("Tonneau4.png")
 	love.graphics.setBackgroundColor(30,30,30)
 	
-	dofile(love.filesystem.getSaveDirectory().."/saved.lua")  --controls are saved in there
+	love.filesystem.load("customControls.lua")()  --controls are saved in there
 	nbJoy = love.joystick.getNumJoysticks()
 	for i=0,nbJoy do
 		love.joystick.open(i)

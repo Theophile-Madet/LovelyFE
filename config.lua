@@ -30,7 +30,9 @@ function custom(L) --used to customize game names
 	local function f(name, description)
 		print("	Changing " .. name .. " description to " .. description)
 		local game = getGameByName(L, name)
-		setTagValue(game, "description", description)
+		if game ~= nil then
+			setTagValue(game, "description", description)
+		end
 	end
 	f("1941", "1941 : Counter Attack")
 	f("1942", "1942")

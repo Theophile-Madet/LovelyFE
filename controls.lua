@@ -89,9 +89,9 @@ function st:keypressed(key, unicode)
 		if not love.keyboard.isDown("lshift") then
 			currentCommand = currentCommand + 1
 			if commands[currentCommand] == nil then
-				local file = love.filesystem.newFile("saved.lua")
-				if file == nil then os.exit() end
-				if not file:open('w') then os.exit() end
+				local file = love.filesystem.newFile("customControls.lua")
+				if file == nil then error("Cannot create saved.lua") end
+				file:open('w')
 				file:write("joys = ")
 				serialize(joys, file)
 				file:write("controools = ")
@@ -124,7 +124,7 @@ function st:keyreleased(key, unicode)
 	end
 end
 
-local function deepcopy(object)
+function deepcopy(object)
     local lookup_table = {}
     local function _copy(object)
         if type(object) ~= "table" then

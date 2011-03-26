@@ -14,7 +14,6 @@ function getGameByName(tbl, name)
 			return v
 		end
 	end
-	error("No game with name " .. name)
 end
 
 function getName(game)
