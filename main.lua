@@ -22,18 +22,6 @@ function love.load(arg)
 	end
 end
 
-function gameSort(A, B) --used in a few places to sort the game list
-	if A == nil then
-		return false
-	end
-	if B == nil then
-		return true
-	end
-	A = getTagValue(A, "description")
-	B = getTagValue(B, "description")
-	return string.lower(A) < string.lower(B)
-end
-
 function serialize(o, file) --"stolen" from Lua book page 112
 	if type(o) == "number" then
 		file:write(o)

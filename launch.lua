@@ -65,7 +65,6 @@ end
 
 function load()
 	love.filesystem.load("availableList.lua")() -- gives a gameList table with all games in
-	--table.sort(gameList, gameSort)
 	math.randomseed(os.time())
 	math.random(#gameList) -- it is said that the first random numbers aren't really random.
 	math.random(#gameList)

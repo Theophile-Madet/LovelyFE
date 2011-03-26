@@ -8,6 +8,10 @@ require "config"
 Gamestate.list = Gamestate.new()
 local st = Gamestate.list
 
+local removeUnusedRoms
+local filterList
+local gameSort
+
 function st:enter()
 	print("Asking mame about all games...")
 	os.execute(pathToMame .. "\\mame.exe -listxml > fullList.xml")
@@ -50,7 +54,7 @@ function st:enter()
 	print("done")
 end
 
-function removeUnusedRoms(xmlTable)
+removeUnusedRoms = function(xmlTable)
 	for k, rom in pairs(xmlTable) do
 		romName = getName(rom)
 		for _, v in pairs(romsNotToInclude) do
@@ -62,8 +66,20 @@ function removeUnusedRoms(xmlTable)
 	end
 end
 
-function filterList(xmlTable) --remove unecessary infos like roms, chips...
+filterList = function(xmlTable) --remove unecessary infos like roms, chips...
 	for _, game in pairs(xmlTable) do
 		removeTag(game, "rom", "dipswitch", "configuration", "chip", "sound")
 	end
+end
+
+gameSort = function(A, B) --used in a few places to sort the game list
+	if A == nil then
+		return false
+	end
+	if B == nil then
+		return true
+	end
+	A = getTagValue(A, "description")
+	B = getTagValue(B, "description")
+	return string.lower(A) < string.lower(B)
 end
