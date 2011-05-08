@@ -50,7 +50,9 @@ function st:enter(in_oldState)
 	
 	numberOfRectangles = math.floor((H -(H/5 + 3*space + 3*squareHeight))/(rectangleHeight+space))
 	numberOfSelectable = 30 + numberOfRectangles
-	love.graphics.setFont(20)
+	textFont = love.graphics.newFont(20)
+    searchStringFont = love.graphics.newFont(40)
+    oldFont = love.graphics.getFont()
 end
 
 function st:draw()
@@ -58,6 +60,8 @@ function st:draw()
 	drawBackground()
 	love.graphics.setColor(255,255,255,255)
 	
+    love.graphics.setFont(textFont)
+    
 	for i=1,10 do
 		for j=1,3 do
 			squareNumber = ((j-1)*10)+i
@@ -85,11 +89,13 @@ function st:draw()
 			love.graphics.print(getDescriptionOfNumber(gameList, searchList[i]), (W/5)/2+space, H/5 + 3*space + 3*squareHeight + (i-1)*(rectangleHeight+space) + space)
 		end
 	end
-	love.graphics.print(searchString, W/2 - (string.len(searchString)/2)*10, (H/5)/2 - 10)
+    
+    love.graphics.setFont(searchStringFont)
+	love.graphics.printf(searchString, W/2, (H/5)/3 - (searchStringFont:getHeight()/2), 0, "center")
 end
 
 function st:leave()
-	love.graphics.setFont(12)	
+	love.graphics.setFont(oldFont)	
 end
 
 function st:update(dt)
