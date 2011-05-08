@@ -68,7 +68,7 @@ end
 
 filterList = function(xmlTable) --remove unecessary infos like roms, chips...
 	for _, game in pairs(xmlTable) do
-		removeTag(game, "rom", "dipswitch", "configuration", "chip", "sound")
+		removeTag(game, "rom", "dipswitch", "configuration", "chip", "sound", "biosset")
 	end
 end
 
