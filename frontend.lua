@@ -99,6 +99,9 @@ function loadGameImages(game, ...)
 end
 
 function launch(romName)
+    if romName == nil then
+        romName = getNameOfNumber(gameList, currentGame)
+    end
 	cmd = ("cd " .. pathToMame .. " & mame.exe " .. romName)
 	print(cmd)
 	os.execute(cmd)
