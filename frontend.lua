@@ -28,7 +28,7 @@ function st:draw()
 	drawBackground()
 	
 	-- Prints useful messages for debugging
-	--love.graphics.print(xml.find(game, "description")[1], 0, 0)
+	--[[love.graphics.print(xml.find(game, "description")[1], 0, 0)
 	love.graphics.print("currentGame = " ..currentGame, 0, 15)
 	love.graphics.print("currentImage = " ..currentImage, 0, 30)
 	love.graphics.print(images[currentImage], 0, 45) 

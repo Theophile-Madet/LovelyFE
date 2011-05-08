@@ -55,7 +55,7 @@ function group(L)
     f("Street Fighter", {"sf", "sf2", "sfiii3n", "ssf2t"})
     f("Strikers 1945", {"s1945", "s1945ii", "s1945iii", "s1945p"})
     f("Tapper", {"tapper", "rbtapper", "sutapper"})
-    f("King of Fighter", {"kof94", "kof95", "kof96", "kof97", "kof99", "kof2000", "kof2001", "kof2002"})
+    f("King of Fighter", {"kof94", "kof95", "kof96", "kof97", "kof98", "kof99", "kof2000", "kof2001", "kof2002"})
 end
 
 function removeRoms (xmlTable, romsToRemove)
