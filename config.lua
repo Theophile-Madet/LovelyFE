@@ -47,7 +47,7 @@ function group(L)
     
     f("Metal Slug", {"mslug", "mslug2", "mslugx", "mslug3", "mslug4", "mslug5"})
     f("19XX", {"1941", "1942", "1943", "1944", "19xx"})
-    f("Gradius", {"Gradius", "Gradius 2", "Gradius 3", "Gradius 4"})
+    f("Gradius", {"gradius", "gradius2", "gradius3", "gradius4"})
     f("Mortal Kombat", {"mk", "mk2", "mk3", "mk4"})
     f("Puzzle Bobble", {"pbobble", "pbobble2", "pbobble3", "pbobble4"})
     f("R-Type", {"rtype", "rtype2", "rtypeleo"})
