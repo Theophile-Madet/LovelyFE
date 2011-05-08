@@ -234,18 +234,13 @@ function st:update(dt)
 end
 
 treatInput = function(input)
-	if input == "menu/cancel" then
-		Gamestate.switch(Gamestate.menu)
-	elseif input == "action" then
-		goToImageDetail()
-	elseif input == "next game" then 
-		selected = selected + 3 
-	elseif input == "previous game" then
-		selected = selected - 3
-	elseif input == "next letter" then
-		selected = selected + 1
-	elseif input == "previous letter" then
-		selected = selected - 1
+	if input == "menu/cancel"         then Gamestate.switch(Gamestate.menu)
+	elseif input == "action"          then goToImageDetail()
+	elseif input == "next game"       then selected = selected + 3 
+	elseif input == "previous game"   then selected = selected - 3
+	elseif input == "next letter"     then selected = selected + 1
+	elseif input == "previous letter" then selected = selected - 1
+	elseif input == "exit"            then os.exit()
 	end
 	
 	if selected > 9 then

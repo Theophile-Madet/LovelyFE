@@ -94,11 +94,11 @@ treatInput = function(input)
 	if input == "menu/cancel" then
 		Gamestate.switch(Gamestate.frontend)
 	elseif input == "action" then
-		if selected == 1 then
-			Gamestate.switch(Gamestate.imagesMenu)
-		elseif selected == 2 then
-			Gamestate.switch(Gamestate.search)
+		if     selected == 1 then Gamestate.switch(Gamestate.imagesMenu)
+		elseif selected == 2 then Gamestate.switch(Gamestate.search)
 		end
+    elseif input == "exit" then
+        os.exit()
 	elseif love.timer.getTime() - lastInputTime > 0.2 then
 		if input == input == "next game" then 
 			selected = selected + 3 
