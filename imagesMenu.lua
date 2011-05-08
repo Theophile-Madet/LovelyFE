@@ -31,6 +31,9 @@ function st:enter(in_oldState)
 		unavailable = love.graphics.newImage("Unavailable.png")
 	end
 	game = gameList[currentGame]
+    if isGroup(game) then
+        game = getGameOfGroup(game)
+    end
 end
 
 function st:draw()

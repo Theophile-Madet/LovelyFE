@@ -75,12 +75,15 @@ function load()
 	currentImage = 13
 	images={"Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title"}
 	
+    groupSelection = 1
+    
 	mt = {}
 	mt.__index = function(o, key)
 		if key == 0 then
 			return o[table.maxn(o)]
-		end
-		return o[key%table.maxn(o)]
+		else
+            return o[key%table.maxn(o)]
+        end
 	end
 	setmetatable(gameList, mt)
 	setmetatable(images, mt)

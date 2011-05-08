@@ -1,5 +1,24 @@
 --xml.lua
 
+function isGroup(game)
+    return game["label"] == "group"
+end
+
+function getGameOfGroup(group, index)
+    if index == nil then
+        index = groupSelection
+    end
+    
+    if index > table.maxn(group[1]) or index < 0 then
+        index = index % table.maxn(group[1])
+    end
+    if index == 0 then
+        index = table.maxn(group[1])
+    end
+    
+    return group[1][index]
+end
+
 function getGameByNumber(tbl, index)
 	if tbl[index] == nil then
 		error("No game at index " .. index .. " in getGameByNumber")
@@ -10,9 +29,17 @@ end
 
 function getGameByName(tbl, name)
 	for _,v in pairs(tbl) do
-		if v["xarg"] ~= nil and v["xarg"]["name"] == name then
-			return v
+        if isGroup(v) then
+            for _,game in pairs(v[1]) do
+                if getName(game) == name then
+                    return game
+                end
+			end
 		end
+        
+		if getName(v) == name then
+            return v
+        end
 	end
 end
 
@@ -20,6 +47,10 @@ function getName(game)
 	if game == nil then
 		error("Sending nil as game to " .. debug.getinfo(1)["name"])
 	end
+    if game["xarg"] == nil then
+        print("No field xarg in game")
+        return nil
+    end
 	return game["xarg"]["name"]
 end
 
@@ -28,7 +59,11 @@ function getNameOfNumber(xmlTable, index)
 end
 
 function getDescriptionOfNumber(xmlTable, index)
-	return getTagValue(getGameByNumber(xmlTable, index), "description")
+    if isGroup(xmlTable[index]) then
+        return getName(xmlTable[index])
+    else
+        return getTagValue(getGameByNumber(xmlTable, index), "description")
+    end
 end
 
 function setTagValue(game, tag, value)
@@ -50,18 +85,23 @@ end
 function getTagValue(game, tag)
 	if game == nil then
 		error("Sending nil as game to " .. debug.getinfo(1)["name"])
-	end
-	
-	for _, v in pairs(game) do
-		if v["label"] == tag then
-			return v[1]
-		end
-	end
-	
-	error("Tag not found : " .. tag)
+	elseif isGroup(game) then
+        game = getGameOfGroup(game)
+    end
+    
+    for _, v in pairs(game) do
+        if v["label"] == tag then
+            return v[1]
+        end
+    end
+    error("Tag not found : " .. tag)
 end
 
 function getAttributeOfTag(game, tag, attribute)
+    if isGroup(game) then
+        game = getGameOfGroup(game)
+    end
+    
 	for _, v in pairs(game) do
 		if v["label"] == tag then
 			return v["xarg"][attribute]

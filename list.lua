@@ -8,7 +8,6 @@ require "config"
 Gamestate.list = Gamestate.new()
 local st = Gamestate.list
 
-local removeUnusedRoms
 local filterList
 local gameSort
 
@@ -34,11 +33,13 @@ function st:enter()
 	tempXmlTable = nil
 	
 	print("Deleting unused infos")
-	availableList = filterList(xmlTable)
+	filterList(xmlTable)
 	print("Removing unused roms")
-	removeUnusedRoms(xmlTable)
+	removeRoms(xmlTable, romsNotToInclude)
 	print("Customizing list")
 	custom(xmlTable)
+    print("Creating roms groups")
+    group(xmlTable)
 	print("Sorting list")
 	table.sort(xmlTable, gameSort)
 	
@@ -54,17 +55,25 @@ function st:enter()
 	print("done")
 end
 
-removeUnusedRoms = function(xmlTable)
-	for k, rom in pairs(xmlTable) do
-		romName = getName(rom)
-		for _, v in pairs(romsNotToInclude) do
-			if romName == v then
-				xmlTable[k] = nil
-				print("    Removing " .. romName)
-			end
-		end
-	end
-end
+--[[simplify = function(xmlTable)
+    for gameKey, game in pairs(xmlTable) do
+        local gameCopy = {}
+        for valueKey, value in pairs(game) do
+            if type(value) == "table" then
+                local label = value["label"]
+                if label ~= nil then
+                    value["label"] = nil
+                    gameCopy[label] = value
+                end
+            else
+                gameCopy[valueKey] = value
+            end
+        end
+        xmlTable[gameKey] = gameCopy
+    end
+end--]]
+
+
 
 filterList = function(xmlTable) --remove unecessary infos like roms, chips...
 	for _, game in pairs(xmlTable) do
@@ -79,7 +88,15 @@ gameSort = function(A, B) --used in a few places to sort the game list
 	if B == nil then
 		return true
 	end
-	A = getTagValue(A, "description")
-	B = getTagValue(B, "description")
+    if isGroup(A) then
+        A = getName(A)
+    else
+        A = getTagValue(A, "description")
+    end
+    if isGroup(B) then
+        B = getName(B)
+    else
+        B = getTagValue(B, "description")
+    end
 	return string.lower(A) < string.lower(B)
 end

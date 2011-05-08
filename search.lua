@@ -86,7 +86,7 @@ function st:draw()
 		end
 		love.graphics.draw(square, (W/5)/2, H/5 + 3*space + 3*squareHeight + (i-1)*(rectangleHeight+space), 0, rectScaleX, rectScaleY)
 		if searchList[i] ~= nil then
-			love.graphics.print(getDescriptionOfNumber(gameList, searchList[i]), (W/5)/2+space, H/5 + 3*space + 3*squareHeight + (i-1)*(rectangleHeight+space) + space)
+			love.graphics.print(getTagValue(getGameByName(gameList, searchList[i]), "description"), (W/5)/2+space, H/5 + 3*space + 3*squareHeight + (i-1)*(rectangleHeight+space) + space)
 		end
 	end
     
@@ -158,7 +158,7 @@ treatInput = function(input)
 			selected = selected - 1
 		elseif input == "action" then
 			if searchList[selected] ~= nil then
-				launch(getNameOfNumber(gameList, searchList[selected]))
+				launch(searchList[selected])
 			end
 		end
 		if selected > numberOfRectangles then
@@ -174,9 +174,15 @@ end
 function updateSearchList()
 	searchList = {}
 	searchString = searchString .. string.char(string.byte('a')+selected-1)
-	for k in pairs(gameList) do
-		if string.find(string.lower(getDescriptionOfNumber(gameList, k)), searchString) ~= nil then
-			table.insert(searchList, k)
+	for key,game in pairs(gameList) do
+        if isGroup(game) then
+            for _,g in pairs(game[1]) do
+                if string.find(string.lower(getTagValue(g, "description")), searchString) ~= nil then
+                    table.insert(searchList, getName(g))
+                end
+            end
+		elseif string.find(string.lower(getDescriptionOfNumber(gameList, key)), searchString) ~= nil then
+			table.insert(searchList, getName(game))
 		end
 	end
 end

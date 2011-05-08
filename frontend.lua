@@ -28,10 +28,11 @@ function st:draw()
 	drawBackground()
 	
 	-- Prints useful messages for debugging
-	--[[ love.graphics.print(xml.find(game, "description")[1], 0, 0)
+	--love.graphics.print(xml.find(game, "description")[1], 0, 0)
 	love.graphics.print("currentGame = " ..currentGame, 0, 15)
 	love.graphics.print("currentImage = " ..currentImage, 0, 30)
-	love.graphics.print(images[currentImage], 0, 45) --]]
+	love.graphics.print(images[currentImage], 0, 45) 
+    love.graphics.print("groupSelection = " ..groupSelection, 0, 60) --]]
 	
 	love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W)
 
@@ -43,7 +44,53 @@ function st:draw()
 	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+2), (1280/1600)*W, (1140/1200)*H)
 	
 	love.graphics.draw(tonneaux[1], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)
-	
+    
+    if isGroup(game) then
+        local selectedGame = getGameOfGroup(game)
+        local i = selectedGame["Logo"]
+        if i == nil then
+            i = selectedGame["Marquee"]
+        end
+        if i ~= nil then
+            local X = i:getWidth()
+            local Y = i:getHeight()
+            local scale = (W/5)/X
+            if Y*scale > H/5 then
+                scale = (H/5)/Y
+            end
+            love.graphics.draw(i, W/2 - (X/2)*scale, H - Y*scale, 0, scale)
+        end
+        
+        selectedGame = getGameOfGroup(game, groupSelection - 1)
+        i = selectedGame["Logo"]
+        if i == nil then
+            i = selectedGame["Marquee"]
+        end
+        if i ~= nil then
+            local X = i:getWidth()
+            local Y = i:getHeight()
+            local scale = (W/7)/X
+            if Y*scale > H/7 then
+                scale = (H/7)/Y
+            end
+            love.graphics.draw(i, W/4 - (X/2)*scale, H - Y*scale, 0, scale)
+        end
+        
+        selectedGame = getGameOfGroup(game, groupSelection + 1)
+        i = selectedGame["Logo"]
+        if i == nil then
+            i = selectedGame["Marquee"]
+        end
+        if i ~= nil then
+            local X = i:getWidth()
+            local Y = i:getHeight()
+            local scale = (W/7)/X
+            if Y*scale > H/7 then
+                scale = (H/7)/Y
+            end
+            love.graphics.draw(i, W*3/4 - (X/2)*scale, H - Y*scale, 0, scale)
+        end
+    end
 end
 
 function st:keypressed(key, unicode)
@@ -83,24 +130,47 @@ function st:joystickpressed(joystick, button)
 end
 
 function loadGameImages(game, ...)
-	local name = getName(game)
-	for _, folder in ipairs{...} do
-		if game[folder] == nil then
-			local path = pathToMame.."/"..folder.."/"..name
-			if love.filesystem.exists(path .. ".png") then
-				game[folder] = love.graphics.newImage(path..".png")
-			elseif love.filesystem.exists(path .. ".bmp") then
-				game[folder] = love.graphics.newImage(path..".bmp")
-			else
-				print("Image not found : "..path)
-			end
-		end
-	end
+    if isGroup(game) then
+        for _, g in pairs(game[1]) do
+            local name = getName(g)
+            for _, folder in ipairs{...} do
+                if g[folder] == nil then
+                    local path = pathToMame.."/"..folder.."/"..name
+                    if love.filesystem.exists(path .. ".png") then
+                        g[folder] = love.graphics.newImage(path..".png")
+                    elseif love.filesystem.exists(path .. ".bmp") then
+                        g[folder] = love.graphics.newImage(path..".bmp")
+                    else
+                        print("Image not found : "..path)
+                    end
+                end
+            end
+        end
+    else
+        local name = getName(game)
+        for _, folder in ipairs{...} do
+            if game[folder] == nil then
+                local path = pathToMame.."/"..folder.."/"..name
+                if love.filesystem.exists(path .. ".png") then
+                    game[folder] = love.graphics.newImage(path..".png")
+                elseif love.filesystem.exists(path .. ".bmp") then
+                    game[folder] = love.graphics.newImage(path..".bmp")
+                else
+                    print("Image not found : "..path)
+                end
+            end
+        end
+    end
 end
 
 function launch(romName)
     if romName == nil then
-        romName = getNameOfNumber(gameList, currentGame)
+        local g = getGameByNumber(gameList, currentGame)
+        if isGroup(g) then
+            romName = getName(getGameOfGroup(g))
+        else
+            romName = getName(g)
+        end
     end
 	cmd = ("cd " .. pathToMame .. " & mame.exe " .. romName)
 	print(cmd)
@@ -108,6 +178,7 @@ function launch(romName)
 end
 
 nextGame = function()
+    groupSelection = 1
 	if love.timer.getTime() - timer > timeLimit then
 		currentGame = currentGame + 1
 		if currentGame-5 ~= 0 then
@@ -124,6 +195,7 @@ nextGame = function()
 end
 
 previousGame = function()
+    groupSelection = 1
 	if love.timer.getTime() - timer > timeLimit then
 		currentGame = currentGame - 1
 		if currentGame < 1 then currentGame = #gameList end
@@ -137,43 +209,53 @@ previousGame = function()
 end
 
 previousLetter = function()
-	oldGame = currentGame
-	if love.timer.getTime() - timer > timeLimit then
-		local gameName = getDescriptionOfNumber(gameList, currentGame)
-		local firstLetter = string.sub(gameName, 1, 1)
-		--Going to last game of previous letter
-		while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
-			currentGame = currentGame - 1
-		end
-		gameName = getDescriptionOfNumber(gameList, currentGame)
-		firstLetter = string.sub(gameName, 1, 1)
-		--Going to last game of previous letter (just before the first game of this letter)
-		while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
-			currentGame = currentGame - 1
-		end
-		--Going to aimed game
-		currentGame = currentGame + 1
-		loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
-		timer = love.timer.getTime()
-	end
-	infoMessage = getInfo()
-	Gamestate.switch(Gamestate.previousLetter, oldGame, currentGame)
+    if love.timer.getTime() - timer > timeLimit then
+        if isGroup(getGameByNumber(gameList, currentGame)) then
+            groupSelection = groupSelection - 1
+        else
+            groupSelection = 1
+            oldGame = currentGame
+            local gameName = getDescriptionOfNumber(gameList, currentGame)
+            local firstLetter = string.sub(gameName, 1, 1)
+            --Going to last game of previous letter
+            while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
+                currentGame = currentGame - 1
+            end
+            gameName = getDescriptionOfNumber(gameList, currentGame)
+            firstLetter = string.sub(gameName, 1, 1)
+            --Going to last game of previous letter (just before the first game of this letter)
+            while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
+                currentGame = currentGame - 1
+            end
+            --Going to aimed game
+            currentGame = currentGame + 1
+            loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
+            infoMessage = getInfo()
+            Gamestate.switch(Gamestate.previousLetter, oldGame, currentGame)
+        end
+        timer = love.timer.getTime()
+    end
 	love.draw()
 end
 
 nextLetter = function()
-	oldGame = currentGame
-	if love.timer.getTime() - timer > timeLimit then
-		local gameName = getDescriptionOfNumber(gameList, currentGame)
-		local firstLetter = string.sub(gameName, 1, 1)
-		while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
-			currentGame = currentGame + 1
-		end
-		loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
-		timer = love.timer.getTime()
-	end
-	infoMessage = getInfo()
-	Gamestate.switch(Gamestate.nextLetter, oldGame, currentGame)
+    if love.timer.getTime() - timer > timeLimit then
+        if isGroup(getGameByNumber(gameList, currentGame)) then
+            groupSelection = groupSelection + 1
+        else
+            groupSelection = 1
+            oldGame = currentGame
+            local gameName = getDescriptionOfNumber(gameList, currentGame)
+            local firstLetter = string.sub(gameName, 1, 1)
+            while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
+                currentGame = currentGame + 1
+            end
+            loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
+            infoMessage = getInfo()
+            Gamestate.switch(Gamestate.nextLetter, oldGame, currentGame)
+        end
+        timer = love.timer.getTime()
+    end
 	love.draw()
 end
 
@@ -206,7 +288,7 @@ function getInfo()
 	info = info .. getTagValue(game, "year") .. "\n"
 	info = info .. "Developper : " .. getTagValue(game, "manufacturer") .. "\n"
 	if getAttributeOfTag(game, "display", "width") ~= nil and getAttributeOfTag(game, "display", "height") ~= nil then
-		info = info .. "Resolution : " .. getAttributeOfTag(game, "display", "width").."*"..getAttributeOfTag(game, "display", "height")
+		info = info .. "Resolution : " .. getAttributeOfTag(game, "display", "width").."*"..getAttributeOfTag(game, "display", "height") .. "\n"
 	end
 	if getAttributeOfTag(game, "input", "players") ~= nil then
 		info = info .. "Number of Players : " .. getAttributeOfTag(game, "input", "players") .. "\n"
@@ -222,6 +304,9 @@ end
 
 function drawBackground() --separated from st:draw because reused several times in other states
 	local game = gameList[currentGame]
+    if isGroup(game) then
+        game = getGameOfGroup(game)
+    end
 	
 	if game[images[currentImage]] ~= nil then
 		local toDisplay = game[images[currentImage]]

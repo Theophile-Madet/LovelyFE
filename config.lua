@@ -2,7 +2,7 @@
 
 pathToMame="MAME"
 
-romsNotToInclude ={ --can be used for bios for example
+romsNotToInclude = { --can be used for bios for example
 "neogeo",
 "nemesis",
 "cpzn2",
@@ -25,6 +25,50 @@ romsNotToInclude ={ --can be used for bios for example
 "konamigx",
 "atarisy1",
 "crusnexo"}
+
+function group(L)
+    local function f(groupName, gameList)
+        print(" Creating group " .. groupName)
+        local tableEntry = {}
+        tableEntry["xarg"] = {}
+        tableEntry["xarg"]["name"] = groupName
+        tableEntry["label"] = "group"
+        
+        local groupList = {}
+        for _, gameName in pairs(gameList) do
+            print("     Adding " .. gameName .. " to group")
+            groupList[#groupList+1] = deepcopy(getGameByName(L, gameName))
+        end
+        tableEntry[1] = groupList
+        
+        L[#L+1] = tableEntry
+        removeRoms(L, gameList)
+    end
+    
+    f("Metal Slug", {"mslug", "mslug2", "mslugx", "mslug3", "mslug4", "mslug5"})
+    f("19XX", {"1941", "1942", "1943", "1944", "19xx"})
+    f("Gradius", {"Gradius", "Gradius 2", "Gradius 3", "Gradius 4"})
+    f("Mortal Kombat", {"mk", "mk2", "mk3", "mk4"})
+    f("Puzzle Bobble", {"pbobble", "pbobble2", "pbobble3", "pbobble4"})
+    f("R-Type", {"rtype", "rtype2", "rtypeleo"})
+    f("Samurai Shodown", {"samsho", "samsho2", "samsho3", "samsho4", "samsho5"})
+    f("Street Fighter", {"sf", "sf2", "sfiii3n", "ssf2t"})
+    f("Strikers 1945", {"s1945", "s1945ii", "s1945iii", "s1945p"})
+    f("Tapper", {"tapper", "rbtapper", "sutapper"})
+    f("King of Fighter", {"kof94", "kof95", "kof96", "kof97", "kof99", "kof2000", "kof2001", "kof2002"})
+end
+
+function removeRoms (xmlTable, romsToRemove)
+	for k, rom in pairs(xmlTable) do
+		romName = getName(rom)
+		for _, v in pairs(romsToRemove) do
+			if romName == v then
+				xmlTable[k] = nil
+				print("    Removing " .. romName)
+			end
+		end
+	end
+end
 
 function custom(L) --used to customize game names
 	local function f(name, description)
@@ -106,6 +150,14 @@ function custom(L) --used to customize game names
 	f("kinst", "Killer Instinct")
 	f("klax", "Klax")
 	f("knights", "Knights of the Round")
+    f("kof94", "King of Fighter '94")
+    f("kof95", "King of Fighter '95")
+    f("kof96", "King of Fighter '96")
+    f("kof97", "King of Fighter '97")
+    f("kof98", "King of Fighter '98")
+    f("kof99", "King of Fighter '99")
+    f("kof2000", "King of Fighter 2000")
+    f("kof2002", "King of Fighter 2002")
 	f("liquidk", "Liquid Kids")
 	f("ldrun", "Lode Runner")
 	f("llander", "Lunar Lander")
@@ -183,6 +235,8 @@ function custom(L) --used to customize game names
 	f("gametngk", "The Game Paradise")
 	f("kof2001", "The King of Fighters 2001")
 	f("punisher", "The Punisher")
+    f("toobin", "Toobin'")
+    f("tophuntr", "Top Hunter")
 	f("trog", "Trog")
 	f("tron", "Tron")
 	f("truxton", "Truxton")
