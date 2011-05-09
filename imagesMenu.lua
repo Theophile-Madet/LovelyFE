@@ -13,11 +13,12 @@ local scaleX, scaleY
 local unavailable
 local game
 local oldState
-
+local emptyGameImages
 local treatInput
 local goToImageDetail
 
 function st:enter(in_oldState)
+    loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
 	oldState = in_oldState
 	if selectedSquare == nil then
 		notSelectedSquare = love.graphics.newImage("Square.png")
@@ -41,7 +42,6 @@ function st:draw()
 	drawBackground()
 	love.graphics.setColor(255,255,255,255)
 	
-	images={"Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title"}
 	local image
 	
 	if game["Advert"] ~= nil then
@@ -376,4 +376,16 @@ goToImageDetail = function()
 	end
 	
 	Gamestate.switch(Gamestate.imageDetail, image, x, y, scaleImage)
+end
+
+function st:leave()
+    emptyGameImages(game)
+end
+
+emptyGameImages =  function(game) --remove some images from memory
+	print("emptying " .. getName(game))
+	for _, image in pairs({"Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Panels", "PCB", "Score", "Select", "Title"}) do
+		game[image] = nil
+	end
+	collectgarbage()
 end

@@ -64,6 +64,7 @@ function st:leave()
 end
 
 function load()
+    print("Reading game list")
 	love.filesystem.load("availableList.lua")() -- gives a gameList table with all games in
 	math.randomseed(os.time())
 	math.random(#gameList) -- it is said that the first random numbers aren't really random.
@@ -72,8 +73,6 @@ function load()
 	math.random(#gameList)
 	math.random(#gameList)
 	currentGame = math.random(#gameList)
-	currentImage = 13
-	images={"Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title"}
 	
     groupSelection = 1
     
@@ -86,12 +85,40 @@ function load()
         end
 	end
 	setmetatable(gameList, mt)
-	setmetatable(images, mt)
 	
-	loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
 	infoMessage = getInfo()
-	
-	borne = love.graphics.newImage("Base.png")
+    
+    print("Loading all logos")
+    local logoList = love.filesystem.enumerate("MAME/Logo")
+	for _,logo in pairs(logoList) do
+        local gameName = string.gsub(logo, ".png", "")
+        local game = getGameByName(gameList, gameName)
+        if game ~= nil then
+            game["Logo"] = love.graphics.newImage("MAME/Logo/"..logo)
+        end
+    end
+    print("Loading all marquees")
+    local marqueeList = love.filesystem.enumerate("MAME/Marquee")
+	for _,marquee in pairs(marqueeList) do
+        local gameName = string.gsub(marquee, ".png", "")
+        local game = getGameByName(gameList, gameName)
+        if game ~= nil then
+            game["Marquee"] = love.graphics.newImage("MAME/Marquee/"..marquee)
+        end
+    end
+    print("Loading all snapshots")
+    local snapList = love.filesystem.enumerate("MAME/Snap")
+	for _,snap in pairs(snapList) do
+        if love.filesystem.isFile("MAME/Snap/"..snap) then
+            local gameName = string.gsub(snap, ".png", "")
+            local game = getGameByName(gameList, gameName)
+            if game ~= nil then
+                game["Snap"] = love.graphics.newImage("MAME/Snap/"..snap)
+            end
+        end
+    end
+    
+	--[[borne = love.graphics.newImage("Base.png")
 	dkface = love.graphics.newImage("DKface.png")
 	dkcote = love.graphics.newImage("DKcote.png")
 	tonneaux = {}
@@ -99,7 +126,7 @@ function load()
 	tonneaux[2] = love.graphics.newImage("Tonneau2.png")
 	tonneaux[3] = love.graphics.newImage("Tonneau3.png")
 	tonneaux[4] = love.graphics.newImage("Tonneau4.png")
-	love.graphics.setBackgroundColor(30,30,30)
+	love.graphics.setBackgroundColor(0,0,0)--]]
 	
 	love.filesystem.load("customControls.lua")()  --controls are saved in there
 	nbJoy = love.joystick.getNumJoysticks()

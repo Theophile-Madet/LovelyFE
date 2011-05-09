@@ -84,8 +84,8 @@ function st:draw()
 	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
 	love.graphics.print(toprint, (1280/1600)*W, (1140/1200)*H)
 	
-	numTonneau = math.ceil(timerAnimation*10) % 4 + 1
-	love.graphics.draw(tonneaux[numTonneau], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)
+	--[[numTonneau = math.ceil(timerAnimation*10) % 4 + 1
+	love.graphics.draw(tonneaux[numTonneau], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)--]]
 	
 	if last then Gamestate.switch(oldState) end
 end

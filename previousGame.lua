@@ -6,6 +6,12 @@ local st = Gamestate.previousGame
 local timerAnimation, duree
 local oldState
 local first, last
+local fontHeight
+local X
+local Y
+local scaleX
+local scaleY
+local drawGame
 
 function st:enter(in_oldState, in_old, in_new)
 	oldState = in_oldState
@@ -13,6 +19,11 @@ function st:enter(in_oldState, in_old, in_new)
 	duree = 0.2
 	last = false
 	first = true
+    fontHeight = love.graphics.getFont():getHeight()
+    X = notSelectedSquare:getWidth()
+    Y = notSelectedSquare:getHeight()
+    scaleX = W/5/X
+    scaleY = H/10/Y
 end
 
 function st:update(dt)
@@ -34,34 +45,48 @@ function st:draw()
 	else
 		drawBackground()
 	end
-	
-	local d = timerAnimation/duree
-	local dx, dy, dr
-	
-	dx = (1300-1331)*d
-	dy = (550-340)*d
-	dr = -0.05*d
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-2), ((1331+dx)/1600)*W, ((340+dy)/1200)*H, dr)
-	dx = (1280-1300)*d
-	dy = (690-550)*d
-	dr = (0.05-(-0.05))*d
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-1), ((1300+dx)/1600)*W, ((550+dy)/1200)*H, -0.05+dr)
-	dx = (1300-1280)*d
-	dy = (835-690)*d
-	dr = (-0.05-0.05)*d
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame), ((1280+dx)/1600)*W, ((690+dy)/1200)*H, 0.05+dr)
-	dx = (1280-1300)*d
-	dy = (950-835)*d
-	dr = (0.05-(-0.05))*d
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+1), ((1300+dx)/1600)*W, ((835+dy)/1200)*H, -0.05+dr)
-	dy = (1140-950)*d
-	dr = (-0.05-0)*d
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+2), ((1280)/1600)*W, ((950+dy)/1200)*H, 0.05+dr)
-	dy = (1200-1140)*d
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+3), (1280/1600)*W, ((1140+dy)/1200)*H)
-	
-	local numTonneau = math.ceil(timerAnimation*10) % 4 + 1
-	love.graphics.draw(tonneaux[numTonneau], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)
+    
+    drawGame(currentGame-3, W*4/5 + 4*(W/5)/4, W*4/5 + 3*(W/5)/4, H/2 - 4*Y*scaleY, H/2 - 3*Y*scaleY)
+	drawGame(currentGame-2, W*4/5 + 3*(W/5)/4, W*4/5 + 2*(W/5)/4, H/2 - 3*Y*scaleY, H/2 - 2*Y*scaleY)
+    drawGame(currentGame-1, W*4/5 + 2*(W/5)/4, W*4/5 + (W/5)/4, H/2 - 2*Y*scaleY, H/2 - Y*scaleY)
+    drawGame(currentGame, W*4/5 + (W/5)/4, W*4/5, H/2 - Y*scaleY, H/2)
+	drawGame(currentGame+1, W*4/5, W*4/5 + (W/5)/4, H/2, H/2 + Y*scaleY)
+    drawGame(currentGame+2, W*4/5 + (W/5)/4, W*4/5 + 2*(W/5)/4, H/2 + Y*scaleY, H/2 + 2*Y*scaleY)
+    drawGame(currentGame+3, W*4/5 + 2*(W/5)/4, W*4/5 + 3*(W/5)/4, H/2 + 2*Y*scaleY, H/2 + 3*Y*scaleY)
+    drawGame(currentGame+4, W*4/5 + 3*(W/5)/4, W*4/5 + 4*(W/5)/4, H/2 + 3*Y*scaleY, H/2 + 4*Y*scaleY)
 	
 	if last then Gamestate.switch(oldState) end
+end
+
+drawGame = function(gameNumber, startPosX, endPosX, startPosY, endPosY)
+    local d = timerAnimation/duree
+	local dx, dy
+	local game = getGameByNumber(gameList, gameNumber)
+    local delta = -(W/5/4)
+    startPosX = startPosX + delta
+    endPosX = endPosX + delta
+    
+    dx = (endPosX - startPosX)*d
+    dy = (endPosY - startPosY)*d
+    love.graphics.draw(notSelectedSquare, startPosX + dx, startPosY - Y*scaleY/2 + dy, 0, scaleX, scaleY)
+    
+    if isGroup(game) then
+        game = getGameOfGroup(game)
+    end
+    
+    toDisplay = game["Logo"]
+    if toDisplay == nil then
+        toDisplay = game["Marquee"]
+    end
+    if toDisplay ~= nil then
+        local X = toDisplay:getWidth()
+        local Y = toDisplay:getHeight()
+        local scale = (W/5)/X
+        if Y*scale > H/10 then
+            scale = (H/10)/Y
+        end
+        love.graphics.draw(toDisplay, startPosX + dx + ((W/5)/2 - X*scale/2), startPosY + dy - Y*scale/2, 0, scale)
+    else
+        love.graphics.print(getDescriptionOfNumber(gameList, gameNumber), 10 + startPosX + dx, startPosY - fontHeight/2 + dy)
+    end
 end

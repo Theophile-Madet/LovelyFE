@@ -89,6 +89,9 @@ function getTagValue(game, tag)
         game = getGameOfGroup(game)
     end
     
+    if type(game) == "string" then
+        print(game)
+    end
     for _, v in pairs(game) do
         if v["label"] == tag then
             return v[1]

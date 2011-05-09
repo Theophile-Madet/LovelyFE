@@ -20,7 +20,43 @@ local nextLetter
 local previousLetter
 local treatInput
 local menu
-local emptyGameImages
+local drawGame
+local fontHeight
+
+function st:enter()
+    fontHeight = love.graphics.getFont():getHeight()
+end
+
+drawGame = function(game, posX, posY)
+    local delta = -(W/5/4)
+    posX = posX + delta
+    local X = notSelectedSquare:getWidth()
+    local Y = notSelectedSquare:getHeight()
+    local scaleX = W/5/X
+    local scaleY = H/10/Y
+    
+    love.graphics.draw(notSelectedSquare, posX, posY - Y*scaleY/2, 0, scaleX, scaleY)
+    
+    if isGroup(game) then
+        game = getGameOfGroup(game)
+    end
+    
+    toDisplay = game["Logo"]
+    if toDisplay == nil then
+        toDisplay = game["Marquee"]
+    end
+    if toDisplay ~= nil then
+        local X = toDisplay:getWidth()
+        local Y = toDisplay:getHeight()
+        local scale = (W/5)/X
+        if Y*scale > H/10 then
+            scale = (H/10)/Y
+        end
+        love.graphics.draw(toDisplay, posX + (W/5)/2 - X*scale/2, posY - Y*scale/2, 0, scale)
+    else
+        love.graphics.print(getTagValue(game, "description"), 10 + posX, posY - fontHeight/2)
+    end
+end
 
 function st:draw()
 	local game = gameList[currentGame]
@@ -33,63 +69,35 @@ function st:draw()
 	love.graphics.print("currentImage = " ..currentImage, 0, 30)
 	love.graphics.print(images[currentImage], 0, 45) 
     love.graphics.print("groupSelection = " ..groupSelection, 0, 60) --]]
-	
-	love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W)
-
-	--Print game names on the right
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-2), (1300/1600)*W, (550/1200)*H, -0.05)
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame-1), (1280/1600)*W, (690/1200)*H, 0.05)
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame), (1300/1600)*W, (835/1200)*H, -0.05)
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+1), (1280/1600)*W, (950/1200)*H, 0.05)
-	love.graphics.print(getDescriptionOfNumber(gameList, currentGame+2), (1280/1600)*W, (1140/1200)*H)
-	
-	love.graphics.draw(tonneaux[1], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)
+    
+    if notSelectedSquare == nil then
+		notSelectedSquare = love.graphics.newImage("Square.png")
+		selectedSquare = love.graphics.newImage("SelectedSquare.png")
+	end
     
     if isGroup(game) then
-        local selectedGame = getGameOfGroup(game)
-        local i = selectedGame["Logo"]
-        if i == nil then
-            i = selectedGame["Marquee"]
-        end
-        if i ~= nil then
-            local X = i:getWidth()
-            local Y = i:getHeight()
-            local scale = (W/5)/X
-            if Y*scale > H/5 then
-                scale = (H/5)/Y
-            end
-            love.graphics.draw(i, W/2 - (X/2)*scale, H - Y*scale, 0, scale)
-        end
-        
-        selectedGame = getGameOfGroup(game, groupSelection - 1)
-        i = selectedGame["Logo"]
-        if i == nil then
-            i = selectedGame["Marquee"]
-        end
-        if i ~= nil then
-            local X = i:getWidth()
-            local Y = i:getHeight()
-            local scale = (W/7)/X
-            if Y*scale > H/7 then
-                scale = (H/7)/Y
-            end
-            love.graphics.draw(i, W/4 - (X/2)*scale, H - Y*scale, 0, scale)
-        end
-        
-        selectedGame = getGameOfGroup(game, groupSelection + 1)
-        i = selectedGame["Logo"]
-        if i == nil then
-            i = selectedGame["Marquee"]
-        end
-        if i ~= nil then
-            local X = i:getWidth()
-            local Y = i:getHeight()
-            local scale = (W/7)/X
-            if Y*scale > H/7 then
-                scale = (H/7)/Y
-            end
-            love.graphics.draw(i, W*3/4 - (X/2)*scale, H - Y*scale, 0, scale)
-        end
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2)
+        love.graphics.setColor(255, 255, 255, 255*4/5)
+        drawGame(getGameOfGroup(game, groupSelection-1), W*3/5, H/2)
+        love.graphics.setColor(255, 255, 255, 255*3/5)
+        drawGame(getGameOfGroup(game, groupSelection-2), W*2/5, H/2)
+        love.graphics.setColor(255, 255, 255, 255*2/5)
+        drawGame(getGameOfGroup(game, groupSelection-3), W*1/5, H/2)
+        love.graphics.setColor(255, 255, 255, 255*1/5)
+        drawGame(getGameOfGroup(game, groupSelection-4), 0, H/2)
+        love.graphics.setColor(255, 255, 255, 255)
+    end--]]
+    
+    
+    
+    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 3*(W/5)/4, H/2 + 3*H/10)
+    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 2*(W/5)/4, H/2 + 2*H/10)
+    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5 + (W/5)/4, H/2 + H/10)
+    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 3*(W/5)/4, H/2 - 3*H/10)
+    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 2*(W/5)/4, H/2 - 2*H/10)
+    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + (W/5)/4, H/2 - H/10)
+    if not isGroup(game) then
+        drawGame(getGameByNumber(gameList, currentGame), W*4/5, H/2)
     end
 end
 
@@ -182,11 +190,11 @@ nextGame = function()
 	if love.timer.getTime() - timer > timeLimit then
 		currentGame = currentGame + 1
 		if currentGame-5 ~= 0 then
-			emptyGameImages(gameList[currentGame-5]) 
+			--emptyGameImages(gameList[currentGame-5]) 
 		else
-			emptyGameImages(gameList[currentGame-6])
+			--emptyGameImages(gameList[currentGame-6])
 		end
-		loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
+		--loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
 		timer = love.timer.getTime()
 	end
 	infoMessage = getInfo()
@@ -199,8 +207,8 @@ previousGame = function()
 	if love.timer.getTime() - timer > timeLimit then
 		currentGame = currentGame - 1
 		if currentGame < 1 then currentGame = #gameList end
-		emptyGameImages(gameList[currentGame+5]) 
-		loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
+		--emptyGameImages(gameList[currentGame+5]) 
+		--loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
 		timer = love.timer.getTime()
 	end
 	infoMessage = getInfo()
@@ -211,7 +219,7 @@ end
 previousLetter = function()
     if love.timer.getTime() - timer > timeLimit then
         if isGroup(getGameByNumber(gameList, currentGame)) then
-            groupSelection = groupSelection - 1
+            groupSelection = groupSelection + 1
         else
             groupSelection = 1
             oldGame = currentGame
@@ -229,7 +237,7 @@ previousLetter = function()
             end
             --Going to aimed game
             currentGame = currentGame + 1
-            loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
+            --loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
             infoMessage = getInfo()
             Gamestate.switch(Gamestate.previousLetter, oldGame, currentGame)
         end
@@ -241,7 +249,7 @@ end
 nextLetter = function()
     if love.timer.getTime() - timer > timeLimit then
         if isGroup(getGameByNumber(gameList, currentGame)) then
-            groupSelection = groupSelection + 1
+            groupSelection = groupSelection - 1
         else
             groupSelection = 1
             oldGame = currentGame
@@ -250,7 +258,7 @@ nextLetter = function()
             while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
                 currentGame = currentGame + 1
             end
-            loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
+            --loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
             infoMessage = getInfo()
             Gamestate.switch(Gamestate.nextLetter, oldGame, currentGame)
         end
@@ -274,14 +282,6 @@ treatInput = function(input)
 	end
 end
 
-emptyGameImages =  function(game) --remove some images from memory
-	print("emptying " .. getName(game))
-	for _, image in ipairs(images) do
-		game[image]=nil
-	end
-	collectgarbage()
-end
-
 function getInfo()
 	local game = getGameByNumber(gameList, currentGame)
 	info = "Year : "
@@ -302,52 +302,42 @@ function getInfo()
 	return info
 end
 
-function drawBackground() --separated from st:draw because reused several times in other states
+function drawBackground() --separated from st:draw because reused in other states
 	local game = gameList[currentGame]
     if isGroup(game) then
         game = getGameOfGroup(game)
     end
 	
-	if game[images[currentImage]] ~= nil then
-		local toDisplay = game[images[currentImage]]
-		local X = toDisplay:getWidth()
-		local Y = toDisplay:getHeight()
+	if game["Snap"] ~= nil then
+		local X = game["Snap"]:getWidth()
+		local Y = game["Snap"]:getHeight()
 		local scale = (W*3/5)/X
 		if Y*scale > H*3/5 then
 			scale = (H*3/5)/Y
 		end
-		love.graphics.draw(toDisplay, W/2 - X*scale/2, 2*LH + H/5 + (H*3/5)/2 - Y*scale/2, 0, scale)	
+		love.graphics.draw(game["Snap"], W/2 - X*scale/2, H/2 - (Y/2)*scale, 0, scale)	
 	end
 	
-	love.graphics.draw(borne, 0, 0, 0, W/borne:getWidth(), H/borne:getHeight())
+    if isGroup(game) then
+    else
+        if game["Marquee"] ~= nil and game["Marquee"]:getWidth() > game["Marquee"]:getHeight() then
+            local X = game["Marquee"]:getWidth()
+            local Y = game["Marquee"]:getHeight()
+            local scale = (W*3/5)/X
+            if Y*scale > H/6 then
+                scale = (H/6)/Y
+            end
+            love.graphics.draw(game["Marquee"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2, 0, scale)
+        elseif game["Logo"] ~= nil then
+            local X = game["Logo"]:getWidth()
+            local Y = game["Logo"]:getHeight()
+            local scale = (W*3/5)/X
+            if Y*scale > H/5 then
+                scale = (H/5)/Y
+            end
+            love.graphics.draw(game["Logo"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2, 0, scale)
+        end
+    end
 	
-	if game["Panels"] ~= nil then
-		local X = game["Panels"]:getWidth()
-		local Y = game["Panels"]:getHeight()
-		local scale = (W/4)/X
-		if Y*scale > H/6 then
-			scale = (H/6)/Y
-		end
-		love.graphics.draw(game["Panels"], W/60, H - Y*scale, 0, scale)
-	end
-	
-	if game["Marquee"] ~= nil and game["Marquee"]:getWidth() > game["Marquee"]:getHeight() then
-		local X = game["Marquee"]:getWidth()
-		local Y = game["Marquee"]:getHeight()
-		local scale = (W*3/5)/X
-		if Y*scale > H/5 then
-			scale = (H/5)/Y
-		end
-		love.graphics.draw(game["Marquee"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2 + LW, 0, scale)
-	elseif game["Logo"] ~= nil then
-		local X = game["Logo"]:getWidth()
-		local Y = game["Logo"]:getHeight()
-		local scale = (W*3/5)/X
-		if Y*scale > H/5 then
-			scale = (H/5)/Y
-		end
-		love.graphics.draw(game["Logo"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2 + LW, 0, scale)
-	end
-	
-	love.graphics.draw(dkface, (1343/1600)*W, (180/1200)*H, 0, W/1600)
+    love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W)
 end

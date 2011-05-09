@@ -55,26 +55,6 @@ function st:enter()
 	print("done")
 end
 
---[[simplify = function(xmlTable)
-    for gameKey, game in pairs(xmlTable) do
-        local gameCopy = {}
-        for valueKey, value in pairs(game) do
-            if type(value) == "table" then
-                local label = value["label"]
-                if label ~= nil then
-                    value["label"] = nil
-                    gameCopy[label] = value
-                end
-            else
-                gameCopy[valueKey] = value
-            end
-        end
-        xmlTable[gameKey] = gameCopy
-    end
-end--]]
-
-
-
 filterList = function(xmlTable) --remove unecessary infos like roms, chips...
 	for _, game in pairs(xmlTable) do
 		removeTag(game, "rom", "dipswitch", "configuration", "chip", "sound", "biosset")
