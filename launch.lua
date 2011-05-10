@@ -91,6 +91,8 @@ function load()
 	math.random(#gameList)
 	currentGame = math.random(#gameList)
 	
+    fontHeight = 12
+    
     groupSelection = 1
     
 	mt = {}

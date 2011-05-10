@@ -20,43 +20,6 @@ local nextLetter
 local previousLetter
 local treatInput
 local menu
-local drawGame
-local fontHeight
-
-function st:enter()
-    fontHeight = love.graphics.getFont():getHeight()
-end
-
-drawGame = function(game, posX, posY)
-    local delta = -(W/5/4)
-    posX = posX + delta
-    local X = notSelectedSquare:getWidth()
-    local Y = notSelectedSquare:getHeight()
-    local scaleX = W/5/X
-    local scaleY = H/10/Y
-    
-    --love.graphics.draw(notSelectedSquare, posX, posY - Y*scaleY/2, 0, scaleX, scaleY)
-    
-    if isGroup(game) then
-        game = getGameOfGroup(game)
-    end
-    
-    toDisplay = game["Logo"]
-    if toDisplay == nil then
-        toDisplay = game["Marquee"]
-    end
-    if toDisplay ~= nil then
-        local X = toDisplay:getWidth()
-        local Y = toDisplay:getHeight()
-        local scale = (W/5)/X
-        if Y*scale > H/10 then
-            scale = (H/10)/Y
-        end
-        love.graphics.draw(toDisplay, posX + (W/5)/2 - X*scale/2, posY - Y*scale/2, 0, scale)
-    else
-        love.graphics.print(getTagValue(game, "description"), 10 + posX, posY - fontHeight/2)
-    end
-end
 
 function st:draw()
 	local game = gameList[currentGame]
@@ -93,21 +56,23 @@ function st:draw()
         love.graphics.setColor(r,g,b,a)
     end--]]
     
-    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 3*(W/5)/4, H/2 + 3*H/10)
-    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 2*(W/5)/4, H/2 + 2*H/10)
-    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5 + (W/5)/4, H/2 + H/10)
-    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 3*(W/5)/4, H/2 - 3*H/10)
-    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 2*(W/5)/4, H/2 - 2*H/10)
-    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + (W/5)/4, H/2 - H/10)
+    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 3*(W/5)/4, H/2 + 3*H/10, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 2*(W/5)/4, H/2 + 2*H/10, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5 + (W/5)/4, H/2 + H/10, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 3*(W/5)/4, H/2 - 3*H/10, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 2*(W/5)/4, H/2 - 2*H/10, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + (W/5)/4, H/2 - H/10, -(W/5)/4)
     if isGroup(game) then
-        drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2)
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2, -(W/5)/4)
     else
-        drawGame(getGameByNumber(gameList, currentGame), W*4/5, H/2)
+        drawGame(getGameByNumber(gameList, currentGame), W*4/5, H/2, -(W/5)/4)
     end
     local r, g, b, a = love.graphics.getColor()
     love.graphics.setColor(200,0,0,255*2/3)
     love.graphics.polygon("fill", W - (W/25)*3/2, H/2, W, H/2 - (H/10)/2, W, H/2 + (H/10)/2)
     love.graphics.setColor(r,g,b,a)
+    
+    
 end
 
 function st:keypressed(key, unicode)
@@ -228,7 +193,7 @@ end
 previousLetter = function()
     if love.timer.getTime() - timer > timeLimit then
         if isGroup(getGameByNumber(gameList, currentGame)) then
-            groupSelection = groupSelection + 1
+            groupSelection = groupSelection - 1
         else
             groupSelection = 1
             oldGame = currentGame
@@ -258,7 +223,7 @@ end
 nextLetter = function()
     if love.timer.getTime() - timer > timeLimit then
         if isGroup(getGameByNumber(gameList, currentGame)) then
-            groupSelection = groupSelection - 1
+            groupSelection = groupSelection + 1
         else
             groupSelection = 1
             oldGame = currentGame
@@ -334,8 +299,7 @@ function drawBackground() --separated from st:draw because reused in other state
 		love.graphics.draw(game["Snap"], W/2 - X*scale/2, H/2 - (Y/2)*scale, 0, scale)	
 	end
 	
-    if isGroup(game) then
-    else
+    if not isGroup(game) then
         if game["Marquee"] ~= nil and game["Marquee"]:getWidth() > game["Marquee"]:getHeight() then
             local X = game["Marquee"]:getWidth()
             local Y = game["Marquee"]:getHeight()
@@ -352,6 +316,8 @@ function drawBackground() --separated from st:draw because reused in other state
                 scale = (H/6)/Y
             end
             love.graphics.draw(game["Logo"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2, 0, scale)
+        else
+            love.graphics.printf(getTagValue(game, "description"), 0, (H/6)/2, W, "center")
         end
     end
 	

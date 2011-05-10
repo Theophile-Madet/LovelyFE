@@ -57,3 +57,34 @@ function deepcopy(object)
     end
     return _copy(object)
 end
+
+function drawGame(game, posX, posY, delta)
+    if delta == nil then delta = 0 end
+    posX = posX + delta
+    local X = notSelectedSquare:getWidth()
+    local Y = notSelectedSquare:getHeight()
+    local scaleX = W/5/X
+    local scaleY = H/10/Y
+    
+    love.graphics.draw(notSelectedSquare, posX, posY - Y*scaleY/2, 0, scaleX, scaleY)
+    
+    if isGroup(game) then
+        game = getGameOfGroup(game)
+    end
+    
+    toDisplay = game["Logo"]
+    if toDisplay == nil then
+        toDisplay = game["Marquee"]
+    end
+    if toDisplay ~= nil then
+        local X = toDisplay:getWidth()
+        local Y = toDisplay:getHeight()
+        local scale = (W/5)/X
+        if Y*scale > H/10 then
+            scale = (H/10)/Y
+        end
+        love.graphics.draw(toDisplay, posX + (W/5)/2 - X*scale/2, posY - Y*scale/2, 0, scale)
+    else
+        love.graphics.print(getTagValue(game, "description"), 10 + posX, posY - fontHeight/2)
+    end
+end
