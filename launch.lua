@@ -8,6 +8,8 @@ Gamestate.launch = Gamestate.new()
 local st = Gamestate.launch
 
 local logo
+local numLoaded
+local toLoad
 
 function st:enter()
 	logo = love.graphics.newImage("Logo.png")
@@ -57,6 +59,21 @@ function st:draw()
 	local W = love.graphics.getWidth()
 	local H = love.graphics.getHeight()
 	love.graphics.draw(logo, W/2 - logo:getWidth()/2, H/2 - logo:getHeight()/2)
+    
+    if numLoaded ~= nil then
+        local r, g, b, a = love.graphics.getColor()
+        local X = W/5
+        local length = W*3/5
+        local Y = H*3/4
+        local height = H/10
+        love.graphics.setColor(100,100,100)
+        love.graphics.polygon('fill', X, Y, X + length, Y, X + length, Y + height, X, Y + height)
+        love.graphics.setColor(200, 0, 0)
+        love.graphics.polygon('fill', X, Y, X + length*(numLoaded/toLoad), Y, X + length*(numLoaded/toLoad), Y + height, X, Y + height)
+        love.graphics.setColor(255,255,255)
+        love.graphics.printf(numLoaded .. "/" .. toLoad, W/2, Y + 2, 0, "center")
+        love.graphics.setColor(r,g,b,a)
+    end
 end
 
 function st:leave()
@@ -88,45 +105,32 @@ function load()
 	
 	infoMessage = getInfo()
     
-    print("Loading all logos")
-    local logoList = love.filesystem.enumerate("MAME/Logo")
-	for _,logo in pairs(logoList) do
-        local gameName = string.gsub(logo, ".png", "")
-        local game = getGameByName(gameList, gameName)
-        if game ~= nil then
-            game["Logo"] = love.graphics.newImage("MAME/Logo/"..logo)
-        end
-    end
-    print("Loading all marquees")
-    local marqueeList = love.filesystem.enumerate("MAME/Marquee")
-	for _,marquee in pairs(marqueeList) do
-        local gameName = string.gsub(marquee, ".png", "")
-        local game = getGameByName(gameList, gameName)
-        if game ~= nil then
-            game["Marquee"] = love.graphics.newImage("MAME/Marquee/"..marquee)
-        end
-    end
-    print("Loading all snapshots")
     local snapList = love.filesystem.enumerate("MAME/Snap")
-	for _,snap in pairs(snapList) do
-        if love.filesystem.isFile("MAME/Snap/"..snap) then
-            local gameName = string.gsub(snap, ".png", "")
-            local game = getGameByName(gameList, gameName)
-            if game ~= nil then
-                game["Snap"] = love.graphics.newImage("MAME/Snap/"..snap)
+    local marqueeList = love.filesystem.enumerate("MAME/Marquee")
+    local logoList = love.filesystem.enumerate("MAME/Logo")
+    local romList = love.filesystem.enumerate("MAME/roms")
+    toLoad = #romList*3
+    numLoaded = 0
+    
+    for _, rom in pairs(romList) do
+        local gameName = string.gsub(rom, ".zip", "")
+        local game = getGameByName(gameList, gameName)
+        if game ~= nil then
+            if love.filesystem.exists("MAME/Snap/"..gameName..".png") then
+                game["Snap"] = love.graphics.newImage("MAME/Snap/"..gameName..".png")
+            end
+            if love.filesystem.exists("MAME/Marquee/"..gameName..".png") then
+                game["Marquee"] = love.graphics.newImage("MAME/Marquee/"..gameName..".png")
+            end
+            if love.filesystem.exists("MAME/Logo/"..gameName..".png") then
+                game["Logo"] = love.graphics.newImage("MAME/Logo/"..gameName..".png")
             end
         end
+        numLoaded = numLoaded + 3
+        love.graphics.clear()
+        love.draw()
+        love.graphics.present()
     end
-    
-	--[[borne = love.graphics.newImage("Base.png")
-	dkface = love.graphics.newImage("DKface.png")
-	dkcote = love.graphics.newImage("DKcote.png")
-	tonneaux = {}
-	tonneaux[1] = love.graphics.newImage("Tonneau1.png")
-	tonneaux[2] = love.graphics.newImage("Tonneau2.png")
-	tonneaux[3] = love.graphics.newImage("Tonneau3.png")
-	tonneaux[4] = love.graphics.newImage("Tonneau4.png")
-	love.graphics.setBackgroundColor(0,0,0)--]]
 	
 	love.filesystem.load("customControls.lua")()  --controls are saved in there
 	nbJoy = love.joystick.getNumJoysticks()
