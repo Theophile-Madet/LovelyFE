@@ -76,7 +76,13 @@ function st:draw()
 	end
     
     if isGroup(game) then
+        local r, g, b, a = love.graphics.getColor()
         drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2)
+        love.graphics.setColor(255,255,255,255*1/2)
+        drawGame(getGameOfGroup(game, groupSelection-1), 0+(W/5/4), H/20)
+        drawGame(getGameOfGroup(game, groupSelection+1), W*4/5+(W/5/4), H/20)
+        love.graphics.setColor(r,g,b,a)
+        --[[drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2)
         love.graphics.setColor(255, 255, 255, 255*4/5)
         drawGame(getGameOfGroup(game, groupSelection-1), W*3/5, H/2)
         love.graphics.setColor(255, 255, 255, 255*3/5)
@@ -85,7 +91,7 @@ function st:draw()
         drawGame(getGameOfGroup(game, groupSelection-3), W*1/5, H/2)
         love.graphics.setColor(255, 255, 255, 255*1/5)
         drawGame(getGameOfGroup(game, groupSelection-4), 0, H/2)
-        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.setColor(255, 255, 255, 255)--]]
     end--]]
     
     
@@ -346,5 +352,5 @@ function drawBackground() --separated from st:draw because reused in other state
         end
     end
 	
-    love.graphics.printf(infoMessage, LW + 0.1*LW, 2*LH + H/5 + 20, (250/1600)*W)
+    love.graphics.printf(infoMessage, 5, H/2 -15*3, (W/5)-5)
 end
