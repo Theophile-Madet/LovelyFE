@@ -308,6 +308,13 @@ function drawBackground() --separated from st:draw because reused in other state
         game = getGameOfGroup(game)
     end
 	
+    --print outlines for snaps and marquees
+    r,g,b,a = love.graphics.getColor()
+    love.graphics.setColor(25,25,25)
+    love.graphics.polygon("fill", W/5, H/5, W*4/5, H/5, W*4/5, H*4/5, W/5, H*4/5)
+    love.graphics.polygon("fill", W/5, H/60, W*4/5, H/60, W*4/5, H/6 + H/60, W/5, H/6 + H/60)
+    love.graphics.setColor(r,g,b,a)
+    
 	if game["Snap"] ~= nil then
 		local X = game["Snap"]:getWidth()
 		local Y = game["Snap"]:getHeight()
@@ -331,9 +338,9 @@ function drawBackground() --separated from st:draw because reused in other state
         elseif game["Logo"] ~= nil then
             local X = game["Logo"]:getWidth()
             local Y = game["Logo"]:getHeight()
-            local scale = (W*3/5)/X
-            if Y*scale > H/5 then
-                scale = (H/5)/Y
+            local scale = (W*3/6)/X
+            if Y*scale > H/6 then
+                scale = (H/6)/Y
             end
             love.graphics.draw(game["Logo"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2, 0, scale)
         end
