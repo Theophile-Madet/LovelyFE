@@ -48,12 +48,12 @@ function st:draw()
             d = -d * ((W/25)/2)
         end
         love.graphics.setColor(255,255,255)
-        drawGame(getGameOfGroup(game, groupSelection-1), 0+(W/5/4), (H/5)/2)
-        drawGame(getGameOfGroup(game, groupSelection+1), W*4/5+(W/5/4), (H/5)/2)
-        love.graphics.setColor(200,0,0,255*2/3)
-        love.graphics.polygon("fill", W/5 - W/25 + d, (H/5)/2, W/5 + W/25 + d, H/60, W/5 + W/25 + d, H/60 + H/6)
-        love.graphics.polygon("fill", W*4/5 - W/25 - d, H/60, W*4/5 - W/25 - d, H/60 + H/6, W*4/5 + W/25 - d, (H/5)/2)
-        love.graphics.setColor(r,g,b,a)
+        drawGame(getGameOfGroup(game, groupSelection-1), 0, (H/5)/2)
+        drawGame(getGameOfGroup(game, groupSelection+1), W*4/5, (H/5)/2)
+        local scaleX = ((W/25)*2)/arrow:getWidth()
+        local scaleY = (H/6)/arrow:getHeight()
+        love.graphics.draw(arrow, W/5 + d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
+        love.graphics.draw(arrow, W*4/5 - d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, -scaleX, scaleY)
     end--]]
     
     drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 3*(W/5)/4, H/2 + 3*H/10, -(W/5)/4)
@@ -67,12 +67,10 @@ function st:draw()
     else
         drawGame(getGameByNumber(gameList, currentGame), W*4/5, H/2, -(W/5)/4)
     end
-    local r, g, b, a = love.graphics.getColor()
-    love.graphics.setColor(200,0,0,255*2/3)
-    love.graphics.polygon("fill", W - (W/25)*3/2, H/2, W, H/2 - (H/10)/2, W, H/2 + (H/10)/2)
-    love.graphics.setColor(r,g,b,a)
-    
-    
+  
+    local scaleX = ((W/25)*3/2)/arrow:getWidth()
+    local scaleY = (H/10)/arrow:getHeight()
+    love.graphics.draw(arrow, W - arrow:getWidth()*scaleX, H/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
 end
 
 function st:keypressed(key, unicode)
@@ -154,7 +152,7 @@ function launch(romName)
             romName = getName(g)
         end
     end
-	cmd = ("cd " .. pathToMame .. " & mame.exe " .. romName)
+	cmd = ("cd " .. pathToMame .. " & mame " .. romName)
 	print(cmd)
 	os.execute(cmd)
 end

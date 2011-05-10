@@ -95,6 +95,8 @@ function load()
     
     groupSelection = 1
     
+    arrow = love.graphics.newImage("Arrow.png")
+    
 	mt = {}
 	mt.__index = function(o, key)
 		if key == 0 then

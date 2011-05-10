@@ -66,7 +66,7 @@ function drawGame(game, posX, posY, delta)
     local scaleX = W/5/X
     local scaleY = H/10/Y
     
-    love.graphics.draw(notSelectedSquare, posX, posY - Y*scaleY/2, 0, scaleX, scaleY)
+    --love.graphics.draw(notSelectedSquare, posX, posY - Y*scaleY/2, 0, scaleX, scaleY)
     
     if isGroup(game) then
         game = getGameOfGroup(game)

@@ -9,8 +9,8 @@ local first, last
 
 local X
 local Y
-local scaleX
-local scaleY
+local squareScaleX
+local squareScaleY
 
 function st:enter(in_oldState, in_old, in_new)
 	oldState = in_oldState
@@ -21,8 +21,8 @@ function st:enter(in_oldState, in_old, in_new)
     fontHeight = love.graphics.getFont():getHeight()
     X = notSelectedSquare:getWidth()
     Y = notSelectedSquare:getHeight()
-    scaleX = W/5/X
-    scaleY = H/10/Y
+    squareScaleX = W/5/X
+    squareScaleY = H/10/Y
 end
 
 function st:update(dt)
@@ -46,19 +46,18 @@ function st:draw()
 	end
     
     local d = timerAnimation/duree
-    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 5*(W/5)/4 - 2*d*(W/5)/4, H/2 - 4*Y*scaleY + d*Y*scaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 3*(W/5)/4 - d*(W/5)/4, H/2 - 3*Y*scaleY + d*Y*scaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + 2*(W/5)/4 - d*(W/5)/4, H/2 - 2*Y*scaleY + d*Y*scaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame)  , W*4/5 + 1*(W/5)/4 - d*(W/5)/4, H/2 - 1*Y*scaleY + d*Y*scaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5 + d*(W/5)/4, H/2 + d*Y*scaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 1*(W/5)/4 + d*(W/5)/4, H/2 + 1*Y*scaleY + d*Y*scaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 2*(W/5)/4 + d*(W/5)/4, H/2 + 2*Y*scaleY + d*Y*scaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+4), W*4/5 + 3*(W/5)/4 + 2*d*(W/5)/4, H/2 + 3*Y*scaleY + d*Y*scaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 5*(W/5)/4 - 2*d*(W/5)/4, H/2 - 4*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 3*(W/5)/4 - d*(W/5)/4, H/2 - 3*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + 2*(W/5)/4 - d*(W/5)/4, H/2 - 2*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame)  , W*4/5 + 1*(W/5)/4 - d*(W/5)/4, H/2 - 1*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5 + d*(W/5)/4, H/2 + d*Y*squareScaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 1*(W/5)/4 + d*(W/5)/4, H/2 + 1*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 2*(W/5)/4 + d*(W/5)/4, H/2 + 2*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame+4), W*4/5 + 3*(W/5)/4 + 2*d*(W/5)/4, H/2 + 3*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
     
-    local r, g, b, a = love.graphics.getColor()
-    love.graphics.setColor(200,0,0,255*2/3)
-    love.graphics.polygon("fill", W - (W/25)*3/2, H/2, W, H/2 - (H/10)/2, W, H/2 + (H/10)/2)
-    love.graphics.setColor(r,g,b,a)
+    local scaleX = ((W/25)*3/2)/arrow:getWidth()
+    local scaleY = (H/10)/arrow:getHeight()
+    love.graphics.draw(arrow, W - arrow:getWidth()*scaleX, H/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
 	
 	if last then Gamestate.switch(oldState) end
 end
