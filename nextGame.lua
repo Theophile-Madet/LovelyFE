@@ -71,7 +71,7 @@ drawGame = function(gameNumber, startPosX, endPosX, startPosY, endPosY)
     
     dx = (endPosX - startPosX)*d
     dy = (endPosY - startPosY)*d
-    love.graphics.draw(notSelectedSquare, startPosX + dx, startPosY - Y*scaleY/2 + dy, 0, scaleX, scaleY)
+    --love.graphics.draw(notSelectedSquare, startPosX + dx, startPosY - Y*scaleY/2 + dy, 0, scaleX, scaleY)
     
     if isGroup(game) then
         game = getGameOfGroup(game)

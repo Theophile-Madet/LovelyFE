@@ -35,7 +35,7 @@ drawGame = function(game, posX, posY)
     local scaleX = W/5/X
     local scaleY = H/10/Y
     
-    love.graphics.draw(notSelectedSquare, posX, posY - Y*scaleY/2, 0, scaleX, scaleY)
+    --love.graphics.draw(notSelectedSquare, posX, posY - Y*scaleY/2, 0, scaleX, scaleY)
     
     if isGroup(game) then
         game = getGameOfGroup(game)
@@ -61,8 +61,8 @@ end
 function st:draw()
 	local game = gameList[currentGame]
 
-	drawBackground()
-	
+    drawBackground()
+    
 	-- Prints useful messages for debugging
 	--[[love.graphics.print(xml.find(game, "description")[1], 0, 0)
 	love.graphics.print("currentGame = " ..currentGame, 0, 15)
@@ -77,24 +77,21 @@ function st:draw()
     
     if isGroup(game) then
         local r, g, b, a = love.graphics.getColor()
-        drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2)
-        love.graphics.setColor(255,255,255,255*1/2)
-        drawGame(getGameOfGroup(game, groupSelection-1), 0+(W/5/4), H/20)
-        drawGame(getGameOfGroup(game, groupSelection+1), W*4/5+(W/5/4), H/20)
+        local d = ((love.timer.getTime() % 2) - 1) * ((W/25)/2)
+        local d = (love.timer.getTime() % 2) - 1
+        if d < 0 then
+            d = d * ((W/25)/2)
+        else
+            d = -d * ((W/25)/2)
+        end
+        love.graphics.setColor(255,255,255)
+        drawGame(getGameOfGroup(game, groupSelection-1), 0+(W/5/4), (H/5)/2)
+        drawGame(getGameOfGroup(game, groupSelection+1), W*4/5+(W/5/4), (H/5)/2)
+        love.graphics.setColor(200,0,0,255*2/3)
+        love.graphics.polygon("fill", W/5 - W/25 + d, (H/5)/2, W/5 + W/25 + d, H/60, W/5 + W/25 + d, H/60 + H/6)
+        love.graphics.polygon("fill", W*4/5 - W/25 - d, H/60, W*4/5 - W/25 - d, H/60 + H/6, W*4/5 + W/25 - d, (H/5)/2)
         love.graphics.setColor(r,g,b,a)
-        --[[drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2)
-        love.graphics.setColor(255, 255, 255, 255*4/5)
-        drawGame(getGameOfGroup(game, groupSelection-1), W*3/5, H/2)
-        love.graphics.setColor(255, 255, 255, 255*3/5)
-        drawGame(getGameOfGroup(game, groupSelection-2), W*2/5, H/2)
-        love.graphics.setColor(255, 255, 255, 255*2/5)
-        drawGame(getGameOfGroup(game, groupSelection-3), W*1/5, H/2)
-        love.graphics.setColor(255, 255, 255, 255*1/5)
-        drawGame(getGameOfGroup(game, groupSelection-4), 0, H/2)
-        love.graphics.setColor(255, 255, 255, 255)--]]
     end--]]
-    
-    
     
     drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 3*(W/5)/4, H/2 + 3*H/10)
     drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 2*(W/5)/4, H/2 + 2*H/10)
@@ -102,9 +99,15 @@ function st:draw()
     drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 3*(W/5)/4, H/2 - 3*H/10)
     drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 2*(W/5)/4, H/2 - 2*H/10)
     drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + (W/5)/4, H/2 - H/10)
-    if not isGroup(game) then
+    if isGroup(game) then
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2)
+    else
         drawGame(getGameByNumber(gameList, currentGame), W*4/5, H/2)
     end
+    local r, g, b, a = love.graphics.getColor()
+    love.graphics.setColor(200,0,0,255*2/3)
+    love.graphics.polygon("fill", W - (W/25)*3/2, H/2, W, H/2 - (H/10)/2, W, H/2 + (H/10)/2)
+    love.graphics.setColor(r,g,b,a)
 end
 
 function st:keypressed(key, unicode)
@@ -316,7 +319,7 @@ function drawBackground() --separated from st:draw because reused in other state
 	
     --print outlines for snaps and marquees
     r,g,b,a = love.graphics.getColor()
-    love.graphics.setColor(25,25,25)
+    love.graphics.setColor(10,10,10)
     love.graphics.polygon("fill", W/5, H/5, W*4/5, H/5, W*4/5, H*4/5, W/5, H*4/5)
     love.graphics.polygon("fill", W/5, H/60, W*4/5, H/60, W*4/5, H/6 + H/60, W/5, H/6 + H/60)
     love.graphics.setColor(r,g,b,a)
