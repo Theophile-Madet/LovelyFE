@@ -39,21 +39,8 @@ function st:draw()
 	end
     
     if isGroup(game) then
-        local r, g, b, a = love.graphics.getColor()
-        local d = ((love.timer.getTime() % 2) - 1) * ((W/25)/2)
-        local d = (love.timer.getTime() % 2) - 1
-        if d < 0 then
-            d = d * ((W/25)/2)
-        else
-            d = -d * ((W/25)/2)
-        end
-        love.graphics.setColor(255,255,255)
         drawGame(getGameOfGroup(game, groupSelection-1), 0, (H/5)/2)
         drawGame(getGameOfGroup(game, groupSelection+1), W*4/5, (H/5)/2)
-        local scaleX = ((W/25)*2)/arrow:getWidth()
-        local scaleY = (H/6)/arrow:getHeight()
-        love.graphics.draw(arrow, W/5 + d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
-        love.graphics.draw(arrow, W*4/5 - d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, -scaleX, scaleY)
     end--]]
     
     drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 3*(W/5)/4, H/2 + 3*H/10, -(W/5)/4)
@@ -71,6 +58,23 @@ function st:draw()
     local scaleX = ((W/25)*3/2)/arrow:getWidth()
     local scaleY = (H/10)/arrow:getHeight()
     love.graphics.draw(arrow, W - arrow:getWidth()*scaleX, H/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
+    
+    local r, g, b, a = love.graphics.getColor()
+    local scaleX = ((W/25)*2)/arrow:getWidth()
+    local scaleY = (H/6)/arrow:getHeight()
+    local d = (love.timer.getTime() % 2) - 1
+    if d < 0 then
+        d = d * ((W/25)/2)
+    else
+        d = -d * ((W/25)/2)
+    end
+    if not isGroup(game) then
+        love.graphics.setColor(0,50,50,255/2)
+        d = -(W/25)/2
+    end
+    love.graphics.draw(arrow, W/5 + d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
+    love.graphics.draw(arrow, W*4/5 - d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, -scaleX, scaleY)
+    love.graphics.setColor(r,g,b,a)
 end
 
 function st:keypressed(key, unicode)
