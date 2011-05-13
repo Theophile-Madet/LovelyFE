@@ -7,8 +7,11 @@ local oldSate
 local duree, timerAnimation
 local old, new
 local first, last
-local len
 
+local X
+local Y
+local squareScaleX
+local squareScaleY
 
 function st:enter(in_oldState, in_old, in_new)
 	oldState = in_oldState
@@ -18,17 +21,11 @@ function st:enter(in_oldState, in_old, in_new)
 	first = true
 	last = false
 	timerAnimation = 0
-	len = math.max(
-		string.len(getDescriptionOfNumber(gameList, old-2)),
-		string.len(getDescriptionOfNumber(gameList, old-1)),
-		string.len(getDescriptionOfNumber(gameList, old)),
-		string.len(getDescriptionOfNumber(gameList, old+1)),
-		string.len(getDescriptionOfNumber(gameList, old+2)),
-		string.len(getDescriptionOfNumber(gameList, new-2)),
-		string.len(getDescriptionOfNumber(gameList, new-1)),
-		string.len(getDescriptionOfNumber(gameList, new)),
-		string.len(getDescriptionOfNumber(gameList, new+1)),
-		string.len(getDescriptionOfNumber(gameList, new+2)))
+    
+	X = notSelectedSquare:getWidth()
+    Y = notSelectedSquare:getHeight()
+    squareScaleX = W/5/X
+    squareScaleY = H/10/Y
 end
 
 function st:update(dt)
@@ -47,45 +44,53 @@ end
 function st:draw()
 	drawBackground()
 	
-	local nameNew, nameOld
-	
-	nameNew = getDescriptionOfNumber(gameList, new-2)
-	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = getDescriptionOfNumber(gameList, old-2)
-	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
-	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
-	love.graphics.print(toprint, (1300/1600)*W, (550/1200)*H, -0.05)
-	
-	nameNew = getDescriptionOfNumber(gameList, new-1)
-	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = getDescriptionOfNumber(gameList, old-1)
-	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
-	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
-	love.graphics.print(toprint, (1280/1600)*W, (690/1200)*H, 0.05)
-	
-	nameNew = getDescriptionOfNumber(gameList, new)
-	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = getNameOfNumber(gameList, old)
-	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
-	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
-	love.graphics.print(toprint, (1300/1600)*W, (835/1200)*H, -0.05)
-	
-	nameNew = getDescriptionOfNumber(gameList, new+1)
-	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = getDescriptionOfNumber(gameList, old+1)
-	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
-	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
-	love.graphics.print(toprint, (1280/1600)*W, (950/1200)*H, 0.05)
-	
-	nameNew = getDescriptionOfNumber(gameList, new+2)
-	nameNew = nameNew .. string.rep(" ", len - string.len(nameNew))
-	nameOld = getDescriptionOfNumber(gameList, old+2)
-	nameOld = nameOld .. string.rep(" ", len - string.len(nameOld))
-	toprint = string.sub(nameNew, 1, (timerAnimation/duree)*len) .. string.sub(nameOld, (timerAnimation/duree)*len+1)
-	love.graphics.print(toprint, (1280/1600)*W, (1140/1200)*H)
-	
-	--[[numTonneau = math.ceil(timerAnimation*10) % 4 + 1
-	love.graphics.draw(tonneaux[numTonneau], (1300/1600)*W - tonneaux[1]:getWidth(), (835/1200)*H)--]]
-	
+    local d = (timerAnimation/duree)*(W/5)
+    local r, g, b, a = love.graphics.getColor()
+    
+    love.graphics.setColor(r,g,b, 255 - 255*(timerAnimation/duree))
+	drawGame(getGameByNumber(gameList, old+3), W*4/5 + 2*(W/5)/4 - d, H/2 + 3*H/10)
+    drawGame(getGameByNumber(gameList, old+2), W*4/5 + 1*(W/5)/4 - d, H/2 + 2*H/10)
+    drawGame(getGameByNumber(gameList, old+1), W*4/5 - d, H/2 + H/10)
+    drawGame(getGameByNumber(gameList, old-3), W*4/5 + 2*(W/5)/4 - d, H/2 - 3*H/10)
+    drawGame(getGameByNumber(gameList, old-2), W*4/5 + 1*(W/5)/4 - d, H/2 - 2*H/10)
+    drawGame(getGameByNumber(gameList, old-1), W*4/5 - d, H/2 - H/10)
+    
+    local game = getGameByNumber(gameList, old)
+    
+    if isGroup(game) then
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5 - (W/5)/4 - d, H/2)
+    else
+        drawGame(game, W*4/5 - (W/5)/4 - d, H/2)
+    end
+    
+    love.graphics.setColor(r,g,b, 255*(timerAnimation/duree))
+    drawGame(getGameByNumber(gameList, new+3), W*4/5 + W/5 + 2*(W/5)/4 - d, H/2 + 3*H/10)
+    drawGame(getGameByNumber(gameList, new+2), W*4/5 + W/5  + 1*(W/5)/4 - d, H/2 + 2*H/10)
+    drawGame(getGameByNumber(gameList, new+1), W*4/5 + W/5  - d, H/2 + H/10)
+    drawGame(getGameByNumber(gameList, new-3), W*4/5 + W/5  + 2*(W/5)/4 - d, H/2 - 3*H/10)
+    drawGame(getGameByNumber(gameList, new-2), W*4/5 + W/5  + 1*(W/5)/4 - d, H/2 - 2*H/10)
+    drawGame(getGameByNumber(gameList, new-1), W*4/5 + W/5  - d, H/2 - H/10)
+    
+    local game = getGameByNumber(gameList, new)
+    
+    if isGroup(game) then
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5 + W/5  - (W/5)/4 - d, H/2)
+    else
+        drawGame(game, W*4/5 + W/5  - (W/5)/4 - d, H/2)
+    end
+    
+    love.graphics.setColor(r,g,b,a)
+    local scaleX = ((W/25)*3/2)/arrow:getWidth()
+    local scaleY = (H/10)/arrow:getHeight()
+    love.graphics.draw(arrow, W - arrow:getWidth()*scaleX, H/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
+    
+    scaleX = ((W/25)*2)/arrow:getWidth()
+    scaleY = (H/6)/arrow:getHeight()
+    love.graphics.setColor(0,50,50,255/2)
+    d = -(W/25)/2
+    love.graphics.draw(arrow, W/5 + d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
+    love.graphics.draw(arrow, W*4/5 - d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, -scaleX, scaleY)
+    love.graphics.setColor(r,g,b,a)
+    
 	if last then Gamestate.switch(oldState) end
 end

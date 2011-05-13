@@ -18,7 +18,6 @@ function st:enter(in_oldState, in_old, in_new)
 	duree = 0.2
 	last = false
 	first = true
-    fontHeight = love.graphics.getFont():getHeight()
     X = notSelectedSquare:getWidth()
     Y = notSelectedSquare:getHeight()
     squareScaleX = W/5/X
