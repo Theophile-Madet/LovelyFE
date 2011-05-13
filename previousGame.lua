@@ -58,6 +58,15 @@ function st:draw()
     local scaleX = ((W/25)*3/2)/arrow:getWidth()
     local scaleY = (H/10)/arrow:getHeight()
     love.graphics.draw(arrow, W - arrow:getWidth()*scaleX, H/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
+    
+    local r, g, b, a = love.graphics.getColor()
+    scaleX = ((W/25)*2)/arrow:getWidth()
+    scaleY = (H/6)/arrow:getHeight()
+    love.graphics.setColor(0,50,50,255/2)
+    d = -(W/25)/2
+    love.graphics.draw(arrow, W/5 + d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
+    love.graphics.draw(arrow, W*4/5 - d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, -scaleX, scaleY)
+    love.graphics.setColor(r,g,b,a)
 	
 	if last then Gamestate.switch(oldState) end
 end
