@@ -43,16 +43,16 @@ function st:draw()
         drawGame(getGameOfGroup(game, groupSelection+1), W*4/5, (H/5)/2)
     end--]]
     
-    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 3*(W/5)/4, H/2 + 3*H/10, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 2*(W/5)/4, H/2 + 2*H/10, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5 + (W/5)/4, H/2 + H/10, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 3*(W/5)/4, H/2 - 3*H/10, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 2*(W/5)/4, H/2 - 2*H/10, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + (W/5)/4, H/2 - H/10, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 2*(W/5)/4, H/2 + 3*H/10)
+    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + (W/5)/4, H/2 + 2*H/10)
+    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5, H/2 + H/10)
+    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 2*(W/5)/4, H/2 - 3*H/10)
+    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + (W/5)/4, H/2 - 2*H/10)
+    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5, H/2 - H/10)
     if isGroup(game) then
-        drawGame(getGameOfGroup(game, groupSelection), W*4/5, H/2, -(W/5)/4)
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5 - (W/5)/4, H/2)
     else
-        drawGame(getGameByNumber(gameList, currentGame), W*4/5, H/2, -(W/5)/4)
+        drawGame(getGameByNumber(gameList, currentGame), W*4/5 - (W/5)/4, H/2)
     end
   
     local scaleX = ((W/25)*3/2)/arrow:getWidth()
@@ -197,7 +197,6 @@ previousLetter = function()
         if isGroup(getGameByNumber(gameList, currentGame)) then
             groupSelection = groupSelection - 1
         else
-            groupSelection = 1
             oldGame = currentGame
             local gameName = getDescriptionOfNumber(gameList, currentGame)
             local firstLetter = string.sub(gameName, 1, 1)
@@ -227,7 +226,6 @@ nextLetter = function()
         if isGroup(getGameByNumber(gameList, currentGame)) then
             groupSelection = groupSelection + 1
         else
-            groupSelection = 1
             oldGame = currentGame
             local gameName = getDescriptionOfNumber(gameList, currentGame)
             local firstLetter = string.sub(gameName, 1, 1)

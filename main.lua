@@ -58,9 +58,7 @@ function deepcopy(object)
     return _copy(object)
 end
 
-function drawGame(game, posX, posY, delta)
-    if delta == nil then delta = 0 end
-    posX = posX + delta
+function drawGame(game, posX, posY)
     local X = notSelectedSquare:getWidth()
     local Y = notSelectedSquare:getHeight()
     local scaleX = W/5/X

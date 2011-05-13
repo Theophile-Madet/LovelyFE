@@ -46,14 +46,14 @@ function st:draw()
 	end
     
     local d = timerAnimation/duree
-    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 5*(W/5)/4 - 2*d*(W/5)/4, H/2 - 4*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 3*(W/5)/4 - d*(W/5)/4, H/2 - 3*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + 2*(W/5)/4 - d*(W/5)/4, H/2 - 2*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame)  , W*4/5 + 1*(W/5)/4 - d*(W/5)/4, H/2 - 1*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5 + d*(W/5)/4, H/2 + d*Y*squareScaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 1*(W/5)/4 + d*(W/5)/4, H/2 + 1*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 2*(W/5)/4 + d*(W/5)/4, H/2 + 2*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
-    drawGame(getGameByNumber(gameList, currentGame+4), W*4/5 + 3*(W/5)/4 + 2*d*(W/5)/4, H/2 + 3*Y*squareScaleY + d*Y*squareScaleY, -(W/5)/4)
+    drawGame(getGameByNumber(gameList, currentGame-3), W*4/5 + 4*(W/5)/4 - 2*d*(W/5)/4, H/2 - 4*Y*squareScaleY + d*Y*squareScaleY)
+    drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + 2*(W/5)/4 - d*(W/5)/4, H/2 - 3*Y*squareScaleY + d*Y*squareScaleY)
+    drawGame(getGameByNumber(gameList, currentGame-1), W*4/5 + 1*(W/5)/4 - d*(W/5)/4, H/2 - 2*Y*squareScaleY + d*Y*squareScaleY)
+    drawGame(getGameByNumber(gameList, currentGame)  , W*4/5 + 0*(W/5)/4 - d*(W/5)/4, H/2 - 1*Y*squareScaleY + d*Y*squareScaleY)
+    drawGame(getGameByNumber(gameList, currentGame+1), W*4/5 + (d-1)*(W/5)/4, H/2 + d*Y*squareScaleY)
+    drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + 0*(W/5)/4 + d*(W/5)/4, H/2 + 1*Y*squareScaleY + d*Y*squareScaleY)
+    drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 1*(W/5)/4 + d*(W/5)/4, H/2 + 2*Y*squareScaleY + d*Y*squareScaleY)
+    drawGame(getGameByNumber(gameList, currentGame+4), W*4/5 + 2*(W/5)/4 + 2*d*(W/5)/4, H/2 + 3*Y*squareScaleY + d*Y*squareScaleY)
     
     local scaleX = ((W/25)*3/2)/arrow:getWidth()
     local scaleY = (H/10)/arrow:getHeight()
