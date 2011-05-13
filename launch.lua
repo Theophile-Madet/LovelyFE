@@ -142,6 +142,8 @@ function load()
 		love.joystick.open(i)
 	end
 	
+    love.graphics.setFont(love.graphics.newFont("SWEETASCANDY.TTF"))
+    
 	timer = love.timer.getTime()
 	timeLimit = 0.2
 end
