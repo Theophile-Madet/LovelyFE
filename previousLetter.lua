@@ -58,9 +58,9 @@ function st:draw()
     local game = getGameByNumber(gameList, new)
     
     if isGroup(game) then
-        drawGame(getGameOfGroup(game, groupSelection), W*4/5 - W/5  - (W/5)/4 + d, H/2)
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5 - W/5  - (W/5)/4 + d, H/2, true)
     else
-        drawGame(game, W*4/5 - W/5  - (W/5)/4 + d, H/2)
+        drawGame(game, W*4/5 - W/5  - (W/5)/4 + d, H/2, true)
     end
     
     love.graphics.setColor(r,g,b, 255 - 255*(timerAnimation/duree))
@@ -74,9 +74,9 @@ function st:draw()
     local game = getGameByNumber(gameList, old)
     
     if isGroup(game) then
-        drawGame(getGameOfGroup(game, groupSelection), W*4/5  - (W/5)/4 + d, H/2)
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5  - (W/5)/4 + d, H/2, true)
     else
-        drawGame(game, W*4/5  - (W/5)/4 + d, H/2)
+        drawGame(game, W*4/5  - (W/5)/4 + d, H/2, true)
     end
     
     love.graphics.setColor(r,g,b,a)

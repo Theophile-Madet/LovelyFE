@@ -26,8 +26,10 @@ function st:enter()
 	print("Getting info for all roms...")
 	local tempXmlTable = {}
 	for _, rom in ipairs(roms) do
-		rom = string.gsub(rom, ".zip", "")
-		tempXmlTable[#tempXmlTable+1] = getGameByName(xmlTable, rom)
+        if love.filesystem.isFile(pathToMame.."/roms/"..rom) then
+            rom = string.gsub(rom, ".zip", "")
+            tempXmlTable[#tempXmlTable+1] = getGameByName(xmlTable, rom)
+        end
 	end
 	xmlTable = tempXmlTable
 	tempXmlTable = nil

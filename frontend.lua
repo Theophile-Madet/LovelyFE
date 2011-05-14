@@ -39,8 +39,8 @@ function st:draw()
 	end
     
     if isGroup(game) then
-        drawGame(getGameOfGroup(game, groupSelection-1), 0, (H/5)/2)
-        drawGame(getGameOfGroup(game, groupSelection+1), W*4/5, (H/5)/2)
+        drawGame(getGameOfGroup(game, groupSelection-1), 0, (H/5)/2, true)
+        drawGame(getGameOfGroup(game, groupSelection+1), W*4/5, (H/5)/2, true)
     end--]]
     
     drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 2*(W/5)/4, H/2 + 3*H/10)
@@ -50,9 +50,9 @@ function st:draw()
     drawGame(getGameByNumber(gameList, currentGame-2), W*4/5 + (W/5)/4, H/2 - 2*H/10)
     drawGame(getGameByNumber(gameList, currentGame-1), W*4/5, H/2 - H/10)
     if isGroup(game) then
-        drawGame(getGameOfGroup(game, groupSelection), W*4/5 - (W/5)/4, H/2)
+        drawGame(getGameOfGroup(game, groupSelection), W*4/5 - (W/5)/4, H/2, true)
     else
-        drawGame(getGameByNumber(gameList, currentGame), W*4/5 - (W/5)/4, H/2)
+        drawGame(getGameByNumber(gameList, currentGame), W*4/5 - (W/5)/4, H/2, true)
     end
   
     local scaleX = ((W/25)*3/2)/arrow:getWidth()
@@ -60,8 +60,8 @@ function st:draw()
     love.graphics.draw(arrow, W - arrow:getWidth()*scaleX, H/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
     
     local r, g, b, a = love.graphics.getColor()
-    local scaleX = ((W/25)*2)/arrow:getWidth()
-    local scaleY = (H/6)/arrow:getHeight()
+    scaleX = ((W/25)*2)/arrow:getWidth()
+    scaleY = (H/6)/arrow:getHeight()
     local d = (love.timer.getTime() % 2) - 1
     if d < 0 then
         d = d * ((W/25)/2)
@@ -283,7 +283,7 @@ function drawBackground() --separated from st:draw because reused in other state
     end
 	
     --print outlines for snaps and marquees
-    r,g,b,a = love.graphics.getColor()
+    local r,g,b,a = love.graphics.getColor()
     love.graphics.setColor(10,10,10)
     love.graphics.polygon("fill", W/5, H/5, W*4/5, H/5, W*4/5, H*4/5, W/5, H*4/5)
     love.graphics.polygon("fill", W/5, H/60, W*4/5, H/60, W*4/5, H/6 + H/60, W/5, H/6 + H/60)
@@ -322,4 +322,31 @@ function drawBackground() --separated from st:draw because reused in other state
     end
 	
     love.graphics.printf(infoMessage, 5, H/2 -15*3, (W/5)-5)
+    
+    local scaleX = ((W/5)/3)/joystick:getWidth()
+    local scaleY = ((H/5)*(2/3))/joystick:getHeight()
+    local X = joystick:getWidth()*scaleX
+    local Y = joystick:getHeight()*scaleY
+    love.graphics.draw(joystick, W/20, H*4/5 + H/10 - Y/2, 0, scaleX, scaleY)
+    love.graphics.draw(joystick, W/2, H*4/5 + H/10 - Y/2, 0, scaleX, scaleY)
+    
+    scaleX = ((W/5)/4)/topDownArrow:getWidth()
+    scaleY = ((H/5)*(2/3))/topDownArrow:getHeight()
+    X = topDownArrow:getWidth()*scaleX
+    Y = topDownArrow:getHeight()*scaleY
+    love.graphics.draw(topDownArrow, W/20 + (W/5)/3 + 10, H*4/5 + H/10 - Y/2, 0, scaleX, scaleY)
+    love.graphics.print("next/previous game", W/20 + (W/5)/3 + 20 + (W/5)/4, H*4/5 + H/10 - fontHeight)
+    
+    scaleX = ((W/5)/4)/leftRightArrow:getWidth()
+    scaleY = ((H/5)/3)/leftRightArrow:getHeight()
+    X = leftRightArrow:getWidth()*scaleX
+    Y = leftRightArrow:getHeight()*scaleY
+    love.graphics.draw(leftRightArrow, W/2 + (W/5)/3 + 10, H*4/5 + H/10 - Y/2, 0, scaleX, scaleY)
+    local message
+    if isGroup(gameList[currentGame]) then
+        message = "next/previous game"
+    else
+        message = "next/previous letter"
+    end
+    love.graphics.print(message, W/2 + (W/5)/3 + 20 + (W/5)/4, H*4/5 + H/10 - fontHeight)
 end

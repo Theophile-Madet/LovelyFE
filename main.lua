@@ -58,7 +58,11 @@ function deepcopy(object)
     return _copy(object)
 end
 
-function drawGame(game, posX, posY)
+function drawGame(game, posX, posY, selected)
+    local r,g,b,a = love.graphics.getColor()
+    if not selected then
+        love.graphics.setColor(100,100,100)
+    end
     local X = notSelectedSquare:getWidth()
     local Y = notSelectedSquare:getHeight()
     local scaleX = W/5/X
@@ -82,7 +86,8 @@ function drawGame(game, posX, posY)
             scale = (H/10)/Y
         end
         love.graphics.draw(toDisplay, posX + (W/5)/2 - X*scale/2, posY - Y*scale/2, 0, scale)
-    else
+    else 
         love.graphics.print(getTagValue(game, "description"), 10 + posX, posY - fontHeight/2)
     end
+    love.graphics.setColor(r,g,b,a)
 end

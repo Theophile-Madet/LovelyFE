@@ -96,6 +96,11 @@ function load()
     groupSelection = 1
     
     arrow = love.graphics.newImage("Arrow.png")
+    joystick = love.graphics.newImage("Joystick.png")
+    topDownArrow = love.graphics.newImage("TopDownArrow.png")
+    leftRightArrow = love.graphics.newImage("LeftRightArrow.png")
+    redButton = love.graphics.newImage("RedButton.png")
+    yellowButton = love.graphics.newImage("YellowButton.png")
     
 	mt = {}
 	mt.__index = function(o, key)
