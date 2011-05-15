@@ -85,9 +85,9 @@ function load()
     -- it is said that the first random numbers aren't really random.
 	math.random(#gameList);math.random(#gameList);math.random(#gameList);math.random(#gameList);math.random(#gameList)
 	currentGame = math.random(#gameList)
-	currentGame = 75
     
     fontHeight = 12
+    love.graphics.setFont(love.graphics.newFont("SWEETASCANDY.TTF"))
     
     groupSelection = 1
     
@@ -148,6 +148,4 @@ function load()
 	for i=0,nbJoy do
 		love.joystick.open(i)
 	end
-	
-    love.graphics.setFont(love.graphics.newFont("SWEETASCANDY.TTF"))
 end

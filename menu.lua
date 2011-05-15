@@ -40,9 +40,9 @@ function st:draw()
 	
 	for i=1,3 do
 		if i == selected then
-			square = selectedSquare
+			square = im.selectedSquare
 		else
-			square = notSelectedSquare
+			square = im.notSelectedSquare
 		end
 		love.graphics.draw(square, (W/16)*i + X*(i-1), H/2 - Y/2, 0, scaleX, scaleY)
 		if i == 1 then

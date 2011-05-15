@@ -8,9 +8,7 @@ local st = Gamestate.imagesMenu
 require "imageDetail"
 
 local selected = 1
-local selectedSquare, notSelectedSquare
 local scaleX, scaleY
-local unavailable
 local game
 local oldState
 local emptyGameImages
@@ -18,11 +16,11 @@ local treatInput
 local goToImageDetail
 
 function st:enter(in_oldState)
-    loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
+    loadGameImages(getGameByNumber(gameList, currentGame), "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
 	oldState = in_oldState
 	
-	scaleX = (W/4)/selectedSquare:getWidth()
-	scaleY = (H/4)/selectedSquare:getHeight()
+	scaleX = (W/4)/im.selectedSquare:getWidth()
+	scaleY = (H/4)/im.selectedSquare:getHeight()
 	
 	game = gameList[currentGame]
     if isGroup(game) then
@@ -40,7 +38,7 @@ function st:draw()
 	if game["Advert"] ~= nil then
 		image = game["Advert"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -48,9 +46,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, W/16 + W/4/2 - image:getWidth()*scaleImage/2, H/16 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 1 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, W/16, H/16, 0, scaleX, scaleY)
 	love.graphics.print("Advert", W/16, H/16)
@@ -58,7 +56,7 @@ function st:draw()
 	if game["Artwork"] ~= nil then
 		image = game["Artwork"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -66,9 +64,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, 2*(W/16) + W/4 + W/4/2 - image:getWidth()*scaleImage/2, H/16 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 2 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, 2*(W/16) + W/4, H/16, 0, scaleX, scaleY)
 	love.graphics.print("Artwork", 2*(W/16) + W/4, H/16)
@@ -76,7 +74,7 @@ function st:draw()
 	if game["Cabinet"] ~= nil then
 		image = game["Cabinet"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -84,9 +82,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, 3*(W/16) + 2*W/4 + W/4/2 - image:getWidth()*scaleImage/2, H/16 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 3 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, 3*(W/16) + 2*W/4, H/16, 0, scaleX, scaleY)
 	love.graphics.print("Cabinet", 3*(W/16) + 2*W/4, H/16)
@@ -95,7 +93,7 @@ function st:draw()
 	if game["Controls"] ~= nil then
 		image = game["Controls"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -103,9 +101,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, W/16 + W/4/2 - image:getWidth()*scaleImage/2, 2*(H/16) + H/4 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 4 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, W/16, 2*(H/16) + H/4, 0, scaleX, scaleY)
 	love.graphics.print("Controls", W/16, 2*(H/16) + H/4)
@@ -113,7 +111,7 @@ function st:draw()
 	if game["CP"] ~= nil then
 		image = game["CP"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -121,9 +119,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, 2*(W/16) + W/4 + W/4/2 - image:getWidth()*scaleImage/2, 2*(H/16) + H/4 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 5 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, 2*(W/16) + W/4, 2*(H/16) + H/4, 0, scaleX, scaleY)
 	love.graphics.print("CP", 2*(W/16) + W/4, 2*(H/16) + H/4)
@@ -131,7 +129,7 @@ function st:draw()
 	if game["Logo"] ~= nil then
 		image = game["Logo"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -139,9 +137,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, 3*(W/16) + 2*W/4 + W/4/2 - image:getWidth()*scaleImage/2, 2*(H/16) + H/4 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 6 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, 3*(W/16) + 2*W/4, 2*(H/16) + H/4, 0, scaleX, scaleY)
 	love.graphics.print("Logo", 3*(W/16) + 2*W/4, 2*(H/16) + H/4)
@@ -150,7 +148,7 @@ function st:draw()
 	if game["Marquee"] ~= nil then
 		image = game["Marquee"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -158,9 +156,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, W/16 + W/4/2 - image:getWidth()*scaleImage/2, 3*(H/16) + 2*H/4 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 7 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, W/16, 3*(H/16) + 2*H/4, 0, scaleX, scaleY)
 	love.graphics.print("Marquee", W/16, 3*(H/16) + 2*H/4)
@@ -168,7 +166,7 @@ function st:draw()
 	if game["Select"] ~= nil then
 		image = game["Select"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -176,9 +174,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, 2*(W/16) + W/4 + W/4/2 - image:getWidth()*scaleImage/2, 3*(H/16) + 2*H/4 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 8 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, 2*(W/16) + W/4, 3*(H/16) + 2*H/4, 0, scaleX, scaleY)
 	love.graphics.print("Select", 2*(W/16) + W/4, 3*(H/16) + 2*H/4)
@@ -186,7 +184,7 @@ function st:draw()
 	if game["Title"] ~= nil then
 		image = game["Title"]
 	else
-		image = unavailable
+		image = im.unavailable
 	end
 	scaleImage = (W/4)/image:getWidth()
 	if image:getHeight()*scaleImage > H/4 then
@@ -194,9 +192,9 @@ function st:draw()
 	end
 	love.graphics.draw(image, 3*(W/16) + 2*W/4 + W/4/2 - image:getWidth()*scaleImage/2, 3*(H/16) + 2*H/4 + H/4/2 - image:getHeight()*scaleImage/2, 0, scaleImage)
 	if selected == 9 then
-		square = selectedSquare
+		square = im.selectedSquare
 	else
-		square = notSelectedSquare
+		square = im.notSelectedSquare
 	end
 	love.graphics.draw(square, 3*(W/16) + 2*W/4, 3*(H/16) + 2*H/4, 0, scaleX, scaleY)
 	love.graphics.print("Title", 3*(W/16) + 2*W/4, 3*(H/16) + 2*H/4)

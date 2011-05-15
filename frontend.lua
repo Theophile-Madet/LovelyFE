@@ -149,7 +149,7 @@ function loadGameImages(game, ...)
             f(g, ...)
         end
     else
-        f(g, ...)
+        f(game, ...)
     end
 end
 

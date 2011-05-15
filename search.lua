@@ -13,12 +13,12 @@ local numberOfSelectable
 local typeOfSelected
 local squareWidth, squareHeight
 local rectangleWidth, rectangleHeight
-local selectedSquare, notSelectedSquare
 local scaleX, scaleY
 local rectScaleX, rectScaleY
 local numberOfRectangles
 local numberOfSelectable
 local oldState
+local oldFont
 
 local treatInput
 
@@ -36,7 +36,7 @@ function st:enter(in_oldState)
 	rectangleWidth = W-W/5
 	rectangleHeight = squareHeight/2
 	
-	square = notSelectedSquare
+	square = im.notSelectedSquare
 	
 	scaleX = squareWidth / square:getWidth()
 	scaleY = squareHeight / square:getHeight()
@@ -62,9 +62,9 @@ function st:draw()
 		for j=1,3 do
 			squareNumber = ((j-1)*10)+i
 			if typeOfSelected == "letter" and squareNumber == selected then
-				square = selectedSquare
+				square = im.selectedSquare
 			else
-				square = notSelectedSquare
+				square = im.notSelectedSquare
 			end
 			
 			x = (W/5)/2 + (i-1)*space + (i-1)*squareWidth
@@ -76,9 +76,9 @@ function st:draw()
 	
 	for i = 1,numberOfRectangles do
 		if typeOfSelected == "game" and i == selected then
-			square = selectedSquare
+			square = im.selectedSquare
 		else
-			square = notSelectedSquare
+			square = im.notSelectedSquare
 		end
 		love.graphics.draw(square, (W/5)/2, H/5 + 3*space + 3*squareHeight + (i-1)*(rectangleHeight+space), 0, rectScaleX, rectScaleY)
 		if searchList[i] ~= nil then
