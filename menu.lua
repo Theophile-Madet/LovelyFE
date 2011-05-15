@@ -7,7 +7,6 @@ Gamestate.menu = Gamestate.new()
 local st = Gamestate.menu
 
 local selected = 1
-local selectedSquare, notSelectedSquare
 local scaleX, scaleY
 local X, Y
 local unavailable
@@ -22,20 +21,12 @@ local treatInput
 
 function st:enter(in_oldState, in_old, in_new)
 	oldState = in_oldState
-	if selectedSquare == nil then
-		notSelectedSquare = love.graphics.newImage("Square.png")
-		selectedSquare = love.graphics.newImage("SelectedSquare.png")
-	end
 	
-	if unavailable == nil then
-		unavailable = love.graphics.newImage("Unavailable.png")
-	end
+	scaleX = (W/4)/im.selectedSquare:getWidth()
+	scaleY = (H/4)/im.selectedSquare:getHeight()
 	
-	scaleX = (W/4)/selectedSquare:getWidth()
-	scaleY = (H/4)/selectedSquare:getHeight()
-	
-	X = selectedSquare:getWidth()*scaleX
-	Y = selectedSquare:getHeight()*scaleY
+	X = im.selectedSquare:getWidth()*scaleX
+	Y = im.selectedSquare:getHeight()*scaleY
 
 	game = gameList[currentGame]
 end

@@ -13,6 +13,8 @@ local initialScale
 local duree
 local first
 local timerAnimation
+local objectiveX
+local objectiveY
 
 function st:enter(in_oldState, in_image, in_initialX, in_initialY, in_initialScale)
 	oldState = in_oldState
@@ -27,22 +29,22 @@ function st:enter(in_oldState, in_image, in_initialX, in_initialY, in_initialSca
 	local X = image:getWidth()
 	local Y = image:getHeight()
 	
-	objectiveScale = (W-W/5)/X
-	if Y*objectiveScale > (H-H/5) then
-		objectiveScale = (H-H/5)/Y
+	scale = (W-W/5)/X
+	if Y*scale > (H-H/5) then
+		scale = (H-H/5)/Y
 	end
 	
-	objectiveX = W/2 - X*objectiveScale/2
-	objectiveY = H/2 - Y*objectiveScale/2
+	objectiveX = W/2 - X*scale/2
+	objectiveY = H/2 - Y*scale/2
 end
 
 function st:draw()
 	Gamestate.imagesMenu:draw()
 	
 	if timerAnimation < duree then
-		love.graphics.draw(image, initialX + (objectiveX-initialX)*(timerAnimation/duree), initialY + (objectiveY-initialY)*(timerAnimation/duree), 0, initialScale + (objectiveScale-initialScale)*(timerAnimation/duree))
+		love.graphics.draw(image, initialX + (objectiveX-initialX)*(timerAnimation/duree), initialY + (objectiveY-initialY)*(timerAnimation/duree), 0, initialScale + (scale-initialScale)*(timerAnimation/duree))
 	else
-		love.graphics.draw(image, objectiveX, objectiveY, 0, objectiveScale)
+		love.graphics.draw(image, objectiveX, objectiveY, 0, scale)
 	end
 end
 

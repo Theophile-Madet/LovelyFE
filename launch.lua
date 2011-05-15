@@ -52,16 +52,14 @@ function st:draw()
 	if loaded then
 		local r, g, b, a = love.graphics.getColor()
 		love.graphics.setColor(255,255,255,255)
-		drawBackground()
+		--drawBackground()
 		love.graphics.setColor(r,g,b,a)
 	end
 	
-	local W = love.graphics.getWidth()
-	local H = love.graphics.getHeight()
 	love.graphics.draw(logo, W/2 - logo:getWidth()/2, H/2 - logo:getHeight()/2)
     
     if numLoaded ~= nil then
-        local r, g, b, a = love.graphics.getColor()
+        local r,g,b,a = love.graphics.getColor()
         local X = W/5
         local length = W*3/5
         local Y = H*3/4
@@ -84,23 +82,27 @@ function load()
     print("Reading game list")
 	love.filesystem.load("availableList.lua")() -- gives a gameList table with all games in
 	math.randomseed(os.time())
-	math.random(#gameList) -- it is said that the first random numbers aren't really random.
-	math.random(#gameList)
-	math.random(#gameList)
-	math.random(#gameList)
-	math.random(#gameList)
+    -- it is said that the first random numbers aren't really random.
+	math.random(#gameList);math.random(#gameList);math.random(#gameList);math.random(#gameList);math.random(#gameList)
 	currentGame = math.random(#gameList)
-	
+	currentGame = 75
+    
     fontHeight = 12
     
     groupSelection = 1
     
-    arrow = love.graphics.newImage("Arrow.png")
-    joystick = love.graphics.newImage("Joystick.png")
-    topDownArrow = love.graphics.newImage("TopDownArrow.png")
-    leftRightArrow = love.graphics.newImage("LeftRightArrow.png")
-    redButton = love.graphics.newImage("RedButton.png")
-    yellowButton = love.graphics.newImage("YellowButton.png")
+    im = {}
+    im.arrow = love.graphics.newImage("Arrow.png")
+    im.joystick = love.graphics.newImage("Joystick.png")
+    im.tdArrow = love.graphics.newImage("topDownArrow.png")
+    im.lrArrow = love.graphics.newImage("leftRightArrow.png")
+    im.redButton = love.graphics.newImage("RedButton.png")
+    im.yellowButton = love.graphics.newImage("YellowButton.png")
+    im.notSelectedSquare = love.graphics.newImage("Square.png")
+    im.selectedSquare = love.graphics.newImage("SelectedSquare.png")
+    im.unavailable = love.graphics.newImage("Unavailable.png")
+    
+    
     
 	mt = {}
 	mt.__index = function(o, key)
@@ -148,7 +150,4 @@ function load()
 	end
 	
     love.graphics.setFont(love.graphics.newFont("SWEETASCANDY.TTF"))
-    
-	timer = love.timer.getTime()
-	timeLimit = 0.2
 end

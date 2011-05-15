@@ -35,10 +35,6 @@ function st:enter(in_oldState)
 	
 	rectangleWidth = W-W/5
 	rectangleHeight = squareHeight/2
-	if notSelectedSquare == nil then
-		notSelectedSquare = love.graphics.newImage("Square.png")
-		selectedSquare = love.graphics.newImage("SelectedSquare.png")
-	end
 	
 	square = notSelectedSquare
 	

@@ -20,17 +20,10 @@ local goToImageDetail
 function st:enter(in_oldState)
     loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
 	oldState = in_oldState
-	if selectedSquare == nil then
-		notSelectedSquare = love.graphics.newImage("Square.png")
-		selectedSquare = love.graphics.newImage("SelectedSquare.png")
-	end
 	
 	scaleX = (W/4)/selectedSquare:getWidth()
 	scaleY = (H/4)/selectedSquare:getHeight()
 	
-	if unavailable == nil then
-		unavailable = love.graphics.newImage("Unavailable.png")
-	end
 	game = gameList[currentGame]
     if isGroup(game) then
         game = getGameOfGroup(game)
@@ -383,7 +376,6 @@ function st:leave()
 end
 
 emptyGameImages =  function(game) --remove some images from memory
-	print("emptying " .. getName(game))
 	for _, image in pairs({"Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Panels", "PCB", "Score", "Select", "Title"}) do
 		game[image] = nil
 	end

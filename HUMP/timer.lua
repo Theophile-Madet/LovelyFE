@@ -24,36 +24,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]--
 
-Timer = {}
-Timer.functions = {}
-function Timer.update(dt)
-	for func, delay in pairs(Timer.functions) do
+local assert, type = assert, type
+local pairs, ipairs = pairs, ipairs
+local min, math_huge = math.min, math.huge
+module(...)
+
+functions = {}
+function update(dt)
+	local to_remove = {}
+	for func, delay in pairs(functions) do
 		delay = delay - dt
 		if delay <= 0 then
-			Timer.functions[func] = nil
-			func(func)
-		else
-			Timer.functions[func] = delay
+			to_remove[#to_remove+1] = func
 		end
+		functions[func] = delay
+	end
+	for _,func in ipairs(to_remove) do
+		functions[func] = nil
+		func(func)
 	end
 end
 
-function Timer.add(delay, func)
+function add(delay, func)
 	assert(type(func) == "function", "second argument needs to be a function")
-	Timer.functions[func] = delay
+	functions[func] = delay
 end
 
-function Timer.addPeriodic(delay, func, count)
+function addPeriodic(delay, func, count)
 	assert(type(func) == "function", "second argument needs to be a function")
-	if count then
-		Timer.add(delay, function(f) func(func) count = count - 1 if count > 0 then Timer.add(delay, f) end end)
-	else
-		Timer.add(delay, function(f) func(func) Timer.add(delay, f) end)
-	end
+	local count = count or math_huge -- exploit below: math.huge - 1 = math.huge
+
+	add(delay, function(f)
+		func(func)
+		count = count - 1
+		if count > 0 then
+			add(delay, f)
+		end
+	end)
 end
 
-function Timer.clear()
-	Timer.functions = {}
+function clear()
+	functions = {}
 end
 
 function Interpolator(length, func)
@@ -61,7 +72,7 @@ function Interpolator(length, func)
 	local t = 0
 	return function(dt, ...)
 		t = t + dt
-		return t <= length or nil, func(math.min(1, (t-dt)/length), ...)
+		return t <= length and func((t-dt)/length, ...) or nil
 	end
 end
 
@@ -69,8 +80,7 @@ function Oscillator(length, func)
 	assert(type(func) == "function", "second argument needs to be a function")
 	local t = 0
 	return function(dt, ...)
-		t = t + dt
-		while t > length do t = t - length end
+		t = (t + dt) % length
 		return func(t/length, ...)
 	end
 end

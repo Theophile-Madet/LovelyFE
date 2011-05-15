@@ -1,9 +1,13 @@
 --main.lua
 
+--require "profiler"
+
 require "config"
-require "HUMP/gamestate"
+Gamestate = require "HUMP/Gamestate"
 
 function love.load(arg)
+    --os.execute("del log")
+    --profiler.start("log")
 	Gamestate.registerEvents()
 	for _, v in pairs(arg) do
 		if v == "list" then
@@ -61,23 +65,24 @@ end
 function drawGame(game, posX, posY, selected)
     local r,g,b,a = love.graphics.getColor()
     if not selected then
-        love.graphics.setColor(100,100,100)
+        love.graphics.setColor(100,100,100, a)
     end
-    local X = notSelectedSquare:getWidth()
-    local Y = notSelectedSquare:getHeight()
+    local X = im.notSelectedSquare:getWidth()
+    local Y = im.notSelectedSquare:getHeight()
     local scaleX = W/5/X
     local scaleY = H/10/Y
     
     --love.graphics.draw(notSelectedSquare, posX, posY - Y*scaleY/2, 0, scaleX, scaleY)
     
     if isGroup(game) then
-        game = getGameOfGroup(game)
+        game = getGameOfGroup(game, groupSelection)
     end
     
     toDisplay = game["Logo"]
     if toDisplay == nil then
         toDisplay = game["Marquee"]
     end
+    
     if toDisplay ~= nil then
         local X = toDisplay:getWidth()
         local Y = toDisplay:getHeight()
@@ -89,5 +94,6 @@ function drawGame(game, posX, posY, selected)
     else 
         love.graphics.print(getTagValue(game, "description"), 10 + posX, posY - fontHeight/2)
     end
+    
     love.graphics.setColor(r,g,b,a)
 end

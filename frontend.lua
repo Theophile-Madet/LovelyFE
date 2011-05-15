@@ -21,6 +21,41 @@ local previousLetter
 local treatInput
 local menu
 
+local joystickScaleX, joystickScaleY, joystickWidth, joystickHeight
+local tdArrowScaleX, tdArrowScaleY, tdArrowWidth, tdArrowHeight
+local lrArrowScaleX, lrArrowScaleY, lrArrowWidth, lrArrowHeight
+local pointingArrowScaleX, pointingArrowScaleY, pointingArrowWidth, pointingArrowHeight
+local groupArrowScaleX, groupArrowScaleY, groupArrowWidth, groupArrowHeight
+
+function st:enter()
+    if joystickScaleX == nil then
+        joystickScaleX = ((W/5)/3)/im.joystick:getWidth()
+        joystickScaleY = ((H/5)*(2/3))/im.joystick:getHeight()
+        joystickWidth = im.joystick:getWidth()*joystickScaleX
+        joystickHeight = im.joystick:getHeight()*joystickScaleY
+        
+        tdArrowScaleX = ((W/5)/4)/im.tdArrow:getWidth()
+        tdArrowScaleY = ((H/5)*(2/3))/im.tdArrow:getHeight()
+        tdArrowWidth = im.tdArrow:getWidth()*tdArrowScaleX
+        tdArrowHeight = im.tdArrow:getHeight()*tdArrowScaleY
+        
+        lrArrowScaleX = ((W/5)/4)/im.lrArrow:getWidth()
+        lrArrowScaleY = ((H/5)/3)/im.lrArrow:getHeight()
+        lrArrowWidth = im.lrArrow:getWidth()*lrArrowScaleX
+        lrArrowHeight = im.lrArrow:getHeight()*lrArrowScaleY
+        
+        pointingArrowScaleX = ((W/25)*3/2)/im.arrow:getWidth()
+        pointingArrowScaleY = (H/10)/im.arrow:getHeight()
+        pointingArrowWidth = im.arrow:getWidth()*pointingArrowScaleX
+        pointingArrowHeight = im.arrow:getHeight()*pointingArrowScaleY
+        
+        groupArrowScaleX = ((W/25)*2)/im.arrow:getWidth()
+        groupArrowScaleY = (H/6)/im.arrow:getHeight()
+        groupArrowWidth = im.arrow:getWidth()*groupArrowScaleX
+        groupArrowHeight = im.arrow:getHeight()*groupArrowScaleY
+    end
+end
+
 function st:draw()
 	local game = gameList[currentGame]
 
@@ -33,16 +68,12 @@ function st:draw()
 	love.graphics.print(images[currentImage], 0, 45) 
     love.graphics.print("groupSelection = " ..groupSelection, 0, 60) --]]
     
-    if notSelectedSquare == nil then
-		notSelectedSquare = love.graphics.newImage("Square.png")
-		selectedSquare = love.graphics.newImage("SelectedSquare.png")
-	end
-    
     if isGroup(game) then
         drawGame(getGameOfGroup(game, groupSelection-1), 0, (H/5)/2, true)
         drawGame(getGameOfGroup(game, groupSelection+1), W*4/5, (H/5)/2, true)
     end--]]
     
+    --drawing the wheel
     drawGame(getGameByNumber(gameList, currentGame+3), W*4/5 + 2*(W/5)/4, H/2 + 3*H/10)
     drawGame(getGameByNumber(gameList, currentGame+2), W*4/5 + (W/5)/4, H/2 + 2*H/10)
     drawGame(getGameByNumber(gameList, currentGame+1), W*4/5, H/2 + H/10)
@@ -54,27 +85,8 @@ function st:draw()
     else
         drawGame(getGameByNumber(gameList, currentGame), W*4/5 - (W/5)/4, H/2, true)
     end
-  
-    local scaleX = ((W/25)*3/2)/arrow:getWidth()
-    local scaleY = (H/10)/arrow:getHeight()
-    love.graphics.draw(arrow, W - arrow:getWidth()*scaleX, H/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
     
-    local r, g, b, a = love.graphics.getColor()
-    scaleX = ((W/25)*2)/arrow:getWidth()
-    scaleY = (H/6)/arrow:getHeight()
-    local d = (love.timer.getTime() % 2) - 1
-    if d < 0 then
-        d = d * ((W/25)/2)
-    else
-        d = -d * ((W/25)/2)
-    end
-    if not isGroup(game) then
-        love.graphics.setColor(0,50,50,255/2)
-        d = -(W/25)/2
-    end
-    love.graphics.draw(arrow, W/5 + d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, scaleX, scaleY)
-    love.graphics.draw(arrow, W*4/5 - d, (H/5)/2 - arrow:getHeight()*scaleY/2, 0, -scaleX, scaleY)
-    love.graphics.setColor(r,g,b,a)
+    drawGroupArrows()
 end
 
 function st:keypressed(key, unicode)
@@ -97,12 +109,16 @@ function st:update(dt)
 			end
 		end
 	end
+    
+    --can this be removed?
 	if currentGame > #gameList then 
 		currentGame = currentGame %#gameList 
 		if currentGame == 0 then
 			currentGame = #currentGame
 		end
 	end
+    
+    --can this be removed?
 	love.graphics.setColor(255,255,255,255)
 end
 
@@ -114,36 +130,26 @@ function st:joystickpressed(joystick, button)
 end
 
 function loadGameImages(game, ...)
-    if isGroup(game) then
-        for _, g in pairs(game[1]) do
-            local name = getName(g)
-            for _, folder in ipairs{...} do
-                if g[folder] == nil then
-                    local path = pathToMame.."/"..folder.."/"..name
-                    if love.filesystem.exists(path .. ".png") then
-                        g[folder] = love.graphics.newImage(path..".png")
-                    elseif love.filesystem.exists(path .. ".bmp") then
-                        g[folder] = love.graphics.newImage(path..".bmp")
-                    else
-                        print("Image not found : "..path)
-                    end
-                end
-            end
-        end
-    else
-        local name = getName(game)
+    local function f(g, ...)
+        local name = getName(g)
         for _, folder in ipairs{...} do
-            if game[folder] == nil then
+            if g[folder] == nil then
                 local path = pathToMame.."/"..folder.."/"..name
                 if love.filesystem.exists(path .. ".png") then
-                    game[folder] = love.graphics.newImage(path..".png")
+                    g[folder] = love.graphics.newImage(path..".png")
                 elseif love.filesystem.exists(path .. ".bmp") then
-                    game[folder] = love.graphics.newImage(path..".bmp")
-                else
-                    print("Image not found : "..path)
+                    g[folder] = love.graphics.newImage(path..".bmp")
                 end
             end
         end
+    end
+    
+    if isGroup(game) then
+        for _, g in pairs(game[1]) do
+            f(g, ...)
+        end
+    else
+        f(g, ...)
     end
 end
 
@@ -151,94 +157,68 @@ function launch(romName)
     if romName == nil then
         local g = getGameByNumber(gameList, currentGame)
         if isGroup(g) then
-            romName = getName(getGameOfGroup(g))
+            romName = getName(getGameOfGroup(g, groupSelection))
         else
             romName = getName(g)
         end
     end
+    
 	cmd = ("cd " .. pathToMame .. " & mame " .. romName)
-	print(cmd)
 	os.execute(cmd)
 end
 
 nextGame = function()
-    groupSelection = 1
-	if love.timer.getTime() - timer > timeLimit then
-		currentGame = currentGame + 1
-		if currentGame-5 ~= 0 then
-			--emptyGameImages(gameList[currentGame-5]) 
-		else
-			--emptyGameImages(gameList[currentGame-6])
-		end
-		--loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
-		timer = love.timer.getTime()
-	end
+	currentGame = currentGame + 1
 	infoMessage = getInfo()
 	Gamestate.switch(Gamestate.nextGame)
-	love.draw()
 end
 
 previousGame = function()
-    groupSelection = 1
-	if love.timer.getTime() - timer > timeLimit then
-		currentGame = currentGame - 1
-		if currentGame < 1 then currentGame = #gameList end
-		--emptyGameImages(gameList[currentGame+5]) 
-		--loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
-		timer = love.timer.getTime()
-	end
+    currentGame = currentGame - 1
+    if currentGame < 1 then 
+        currentGame = #gameList 
+    end
 	infoMessage = getInfo()
 	Gamestate.switch(Gamestate.previousGame)
-	love.draw()
 end
 
 previousLetter = function()
-    if love.timer.getTime() - timer > timeLimit then
-        if isGroup(getGameByNumber(gameList, currentGame)) then
-            groupSelection = groupSelection - 1
-        else
-            oldGame = currentGame
-            local gameName = getDescriptionOfNumber(gameList, currentGame)
-            local firstLetter = string.sub(gameName, 1, 1)
-            --Going to last game of previous letter
-            while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
-                currentGame = currentGame - 1
-            end
-            gameName = getDescriptionOfNumber(gameList, currentGame)
-            firstLetter = string.sub(gameName, 1, 1)
-            --Going to last game of previous letter (just before the first game of this letter)
-            while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
-                currentGame = currentGame - 1
-            end
-            --Going to aimed game
-            currentGame = currentGame + 1
-            --loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
-            infoMessage = getInfo()
-            Gamestate.switch(Gamestate.previousLetter, oldGame, currentGame)
+    if isGroup(getGameByNumber(gameList, currentGame)) then
+        groupSelection = groupSelection - 1
+    else
+        oldGame = currentGame
+        local gameName = getDescriptionOfNumber(gameList, currentGame)
+        local firstLetter = string.sub(gameName, 1, 1)
+        --Going to last game of previous letter
+        while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
+            currentGame = currentGame - 1
         end
-        timer = love.timer.getTime()
+        gameName = getDescriptionOfNumber(gameList, currentGame)
+        firstLetter = string.sub(gameName, 1, 1)
+        --Going to last game of previous letter (just before the first game of this letter)
+        while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
+            currentGame = currentGame - 1
+        end
+        --Going to aimed game
+        currentGame = currentGame + 1
+        infoMessage = getInfo()
+        Gamestate.switch(Gamestate.previousLetter, oldGame, currentGame)
     end
-	love.draw()
 end
 
 nextLetter = function()
-    if love.timer.getTime() - timer > timeLimit then
-        if isGroup(getGameByNumber(gameList, currentGame)) then
-            groupSelection = groupSelection + 1
-        else
-            oldGame = currentGame
-            local gameName = getDescriptionOfNumber(gameList, currentGame)
-            local firstLetter = string.sub(gameName, 1, 1)
-            while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
-                currentGame = currentGame + 1
-            end
-            --loadGameImages(gameList[currentGame], "Advert", "Artwork", "Cabinet", "Controls", "CP", "GameOver", "Logo", "Marquee", "Panels", "PCB", "Score", "Select", "Snap", "Title")
-            infoMessage = getInfo()
-            Gamestate.switch(Gamestate.nextLetter, oldGame, currentGame)
+    if isGroup(getGameByNumber(gameList, currentGame)) then
+        groupSelection = groupSelection + 1
+    else
+        oldGame = currentGame
+        local gameName = getDescriptionOfNumber(gameList, currentGame)
+        local firstLetter = string.sub(gameName, 1, 1)
+        while string.sub(getDescriptionOfNumber(gameList, currentGame), 1, 1) == firstLetter do
+            currentGame = currentGame + 1
         end
-        timer = love.timer.getTime()
+        infoMessage = getInfo()
+        Gamestate.switch(Gamestate.nextLetter, oldGame, currentGame)
     end
-	love.draw()
 end
 
 menu = function()
@@ -258,8 +238,11 @@ end
 
 function getInfo()
 	local game = getGameByNumber(gameList, currentGame)
-	info = "Year : "
-	info = info .. getTagValue(game, "year") .. "\n"
+    if isGroup(game) then
+        game = getGameOfGroup(game, groupSelection)
+    end
+    
+	info = "Year : " .. getTagValue(game, "year") .. "\n"
 	info = info .. "Developper : " .. getTagValue(game, "manufacturer") .. "\n"
 	if getAttributeOfTag(game, "display", "width") ~= nil and getAttributeOfTag(game, "display", "height") ~= nil then
 		info = info .. "Resolution : " .. getAttributeOfTag(game, "display", "width").."*"..getAttributeOfTag(game, "display", "height") .. "\n"
@@ -275,18 +258,18 @@ function getInfo()
 	info = info .. "Emulation quality : " .. getAttributeOfTag(game, "driver", "status")
 	return info
 end
-
-function drawBackground() --separated from st:draw because reused in other states
-	local game = gameList[currentGame]
+    
+function drawBackground() --separated from st:draw because re-used in other states
+	local game = getGameByNumber(gameList, currentGame)
     if isGroup(game) then
-        game = getGameOfGroup(game)
+        game = getGameOfGroup(game, groupSelection)
     end
 	
     --print outlines for snaps and marquees
     local r,g,b,a = love.graphics.getColor()
     love.graphics.setColor(10,10,10)
-    love.graphics.polygon("fill", W/5, H/5, W*4/5, H/5, W*4/5, H*4/5, W/5, H*4/5)
-    love.graphics.polygon("fill", W/5, H/60, W*4/5, H/60, W*4/5, H/6 + H/60, W/5, H/6 + H/60)
+    love.graphics.rectangle("fill", W/5, H/5, W*3/5, H*3/5)
+    love.graphics.rectangle("fill", W/5, H/60, W*3/5, H/6)
     love.graphics.setColor(r,g,b,a)
     
 	if game["Snap"] ~= nil then
@@ -299,54 +282,62 @@ function drawBackground() --separated from st:draw because reused in other state
 		love.graphics.draw(game["Snap"], W/2 - X*scale/2, H/2 - (Y/2)*scale, 0, scale)	
 	end
 	
-    if not isGroup(game) then
-        if game["Marquee"] ~= nil and game["Marquee"]:getWidth() > game["Marquee"]:getHeight() then
-            local X = game["Marquee"]:getWidth()
-            local Y = game["Marquee"]:getHeight()
-            local scale = (W*3/5)/X
-            if Y*scale > H/6 then
-                scale = (H/6)/Y
-            end
-            love.graphics.draw(game["Marquee"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2, 0, scale)
-        elseif game["Logo"] ~= nil then
-            local X = game["Logo"]:getWidth()
-            local Y = game["Logo"]:getHeight()
-            local scale = (W*3/6)/X
-            if Y*scale > H/6 then
-                scale = (H/6)/Y
-            end
-            love.graphics.draw(game["Logo"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2, 0, scale)
-        else
-            love.graphics.printf(getTagValue(game, "description"), 0, (H/6)/2, W, "center")
+    if game["Marquee"] ~= nil and game["Marquee"]:getWidth() > game["Marquee"]:getHeight() then
+        local X = game["Marquee"]:getWidth()
+        local Y = game["Marquee"]:getHeight()
+        local scale = (W*3/5)/X
+        if Y*scale > H/6 then
+            scale = (H/6)/Y
         end
+        love.graphics.draw(game["Marquee"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2, 0, scale)
+    elseif game["Logo"] ~= nil then
+        local X = game["Logo"]:getWidth()
+        local Y = game["Logo"]:getHeight()
+        local scale = (W*3/6)/X
+        if Y*scale > H/6 then
+            scale = (H/6)/Y
+        end
+        love.graphics.draw(game["Logo"], (W/2) - X*scale/2, (H/5)/2 - Y*scale/2, 0, scale)
+    else
+        love.graphics.printf(getTagValue(game, "description"), 0, (H/6)/2, W, "center")
     end
 	
-    love.graphics.printf(infoMessage, 5, H/2 -15*3, (W/5)-5)
+    love.graphics.printf(infoMessage, 5, H/2 -fontHeight*3, (W/5)-5)
     
-    local scaleX = ((W/5)/3)/joystick:getWidth()
-    local scaleY = ((H/5)*(2/3))/joystick:getHeight()
-    local X = joystick:getWidth()*scaleX
-    local Y = joystick:getHeight()*scaleY
-    love.graphics.draw(joystick, W/20, H*4/5 + H/10 - Y/2, 0, scaleX, scaleY)
-    love.graphics.draw(joystick, W/2, H*4/5 + H/10 - Y/2, 0, scaleX, scaleY)
+    love.graphics.draw(im.joystick, W/20, H*4/5 + H/10 - joystickHeight/2, 0, joystickScaleX, joystickScaleY)
+    love.graphics.draw(im.joystick, W/2, H*4/5 + H/10 - joystickHeight/2, 0, joystickScaleX, joystickScaleY)
     
-    scaleX = ((W/5)/4)/topDownArrow:getWidth()
-    scaleY = ((H/5)*(2/3))/topDownArrow:getHeight()
-    X = topDownArrow:getWidth()*scaleX
-    Y = topDownArrow:getHeight()*scaleY
-    love.graphics.draw(topDownArrow, W/20 + (W/5)/3 + 10, H*4/5 + H/10 - Y/2, 0, scaleX, scaleY)
+    love.graphics.draw(im.tdArrow, W/20 + (W/5)/3 + 10, H*4/5 + H/10 - tdArrowHeight/2, 0, tdArrowScaleX, tdArrowScaleY)
     love.graphics.print("next/previous game", W/20 + (W/5)/3 + 20 + (W/5)/4, H*4/5 + H/10 - fontHeight)
     
-    scaleX = ((W/5)/4)/leftRightArrow:getWidth()
-    scaleY = ((H/5)/3)/leftRightArrow:getHeight()
-    X = leftRightArrow:getWidth()*scaleX
-    Y = leftRightArrow:getHeight()*scaleY
-    love.graphics.draw(leftRightArrow, W/2 + (W/5)/3 + 10, H*4/5 + H/10 - Y/2, 0, scaleX, scaleY)
+    love.graphics.draw(im.lrArrow, W/2 + (W/5)/3 + 10, H*4/5 + H/10 - lrArrowHeight/2, 0, lrArrowScaleX, lrArrowScaleY)
     local message
-    if isGroup(gameList[currentGame]) then
+    if isGroup(getGameByNumber(gameList, currentGame)) then
         message = "next/previous game"
     else
         message = "next/previous letter"
     end
     love.graphics.print(message, W/2 + (W/5)/3 + 20 + (W/5)/4, H*4/5 + H/10 - fontHeight)
+    
+    --arrow pointing the selected game
+    love.graphics.draw(im.arrow, W - pointingArrowWidth, H/2 - pointingArrowHeight/2, 0, pointingArrowScaleX, pointingArrowScaleY)
+end
+
+function drawGroupArrows()
+    local d = (love.timer.getTime() % 2) - 1
+    if d < 0 then
+        d = d * ((W/25)/2)
+    else
+        d = -d * ((W/25)/2)
+    end
+    
+    local r,g,b,a = love.graphics.getColor()
+    if not isGroup(getGameByNumber(gameList, currentGame)) then --if current selection is not a group, arrows are drawn in gray
+        love.graphics.setColor(0,50,50,255/2)
+        d = -(W/25)/2
+    end
+    
+    love.graphics.draw(im.arrow, W/5 + d, (H/5)/2 - groupArrowHeight/2, 0, groupArrowScaleX, groupArrowScaleY)
+    love.graphics.draw(im.arrow, W*4/5 - d, (H/5)/2 - groupArrowHeight/2, 0, -groupArrowScaleX, groupArrowScaleY)
+    love.graphics.setColor(r,g,b,a)
 end
