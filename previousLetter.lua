@@ -69,6 +69,6 @@ function st:draw()
     else
         drawGame(game, W*4/5  - (W/5)/4 + d, H/2, true)
     end
-    
+    love.graphics.setColor(r,g,b,a)
     drawGroupArrows()
 end
