@@ -163,7 +163,8 @@ function launch(romName)
         end
     end
     
-	cmd = ("cd " .. pathToMame .. " & mame " .. romName)
+    local inpFileName = romName .. "." .. os.date("%a.%d.%b.%H.%M")
+	cmd = ("cd " .. pathToMame .. " & mame " .. romName .. " -record " .. inpFileName)
 	os.execute(cmd)
 end
 
