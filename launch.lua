@@ -86,13 +86,13 @@ function st:draw()
             local r,g,b,a = love.graphics.getColor()
             love.graphics.setColor(230,88,160)
             love.graphics.rectangle('fill', X + 33*scaleX, Y + 19*scaleY, (length - 2*33*scaleX)*(numLoaded/toLoad), height - 2*19*scaleY)
-            if numLoaded ~= 0 then
-                love.graphics.setColor(255,255,255)
-                love.graphics.printf(numLoaded .. "/" .. toLoad, W/2, Y + 30, 0, "center")
-            end
             love.graphics.setColor(r,g,b,a)
         else
             love.graphics.draw(loadingBarEnd, X, Y, 0, scaleX, scaleY)
+        end
+        
+        if numLoaded ~= 0 then
+            love.graphics.printf(numLoaded .. "/" .. toLoad, W/2, Y + 30, 0, "center")
         end
     end
 end
