@@ -16,6 +16,7 @@ function st:enter()
 	logo = love.graphics.newImage("Logo.png")
     -- loadingBar = love.graphics.newImage("Loading Start.png")
     -- loadingBarEnd = love.graphics.newImage("Loading End.png")
+    loadingBarSpermEmpty = love.graphics.newImage("loadingBarSpermBlack.png")
     loadingBarSperm = love.graphics.newImage("loadingBarSperm.png")
     
 	timerLogo = 0
@@ -73,32 +74,25 @@ function st:draw()
 	
 	love.graphics.draw(logo, W/2 - logo:getWidth()/2, H/2 - logo:getHeight()/2)
     
-    if numLoaded ~= nil then
-        local X = W/5
-        local length = W*3/5
-        local Y = H*3/4
-        local height = H/8
-        -- local scaleX = length/loadingBar:getWidth()
-        -- local scaleY = height/loadingBar:getHeight()
-        local scale = length/loadingBarSperm:getWidth()
-        
-        love.graphics.setScissor(X,0, length*(numLoaded/toLoad), H)
+    local X = W/5
+    local length = W*3/5
+    local Y = H*3/4
+    local scale = length/loadingBarSperm:getWidth()
+    local height = loadingBarSperm:getHeight()*scale
+    
+    if not loaded then
+        local r,g,b,a = love.graphics.getColor()
+        love.graphics.setColor(230,88,160)
+        love.graphics.rectangle('fill', X, Y, length*(numLoaded/toLoad), height)
+        love.graphics.setColor(r,g,b,a)
+
+        love.graphics.draw(loadingBarSpermEmpty, X, Y, 0, scale)
+    else
         love.graphics.draw(loadingBarSperm, X, Y, 0, scale)
-        love.graphics.setScissor()
-        --[[if numLoaded < toLoad then
-            love.graphics.draw(loadingBar, X, Y, 0, scaleX, scaleY)
-            
-            local r,g,b,a = love.graphics.getColor()
-            love.graphics.setColor(230,88,160)
-            love.graphics.rectangle('fill', X + 33*scaleX, Y + 19*scaleY, (length - 2*33*scaleX)*(numLoaded/toLoad), height - 2*19*scaleY)
-            love.graphics.setColor(r,g,b,a)
-        else
-            love.graphics.draw(loadingBarEnd, X, Y, 0, scaleX, scaleY)
-        end --]]
-        
-        if numLoaded ~= 0 then
-            love.graphics.printf(numLoaded .. "/" .. toLoad, W/2, Y + 30, 0, "center")
-        end
+    end
+    
+    if numLoaded ~= 0 then
+        love.graphics.printf(numLoaded .. "/" .. toLoad, W/2, Y + 30, 0, "center")
     end
 end
 
