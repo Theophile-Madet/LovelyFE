@@ -20,6 +20,7 @@ romsNotToInclude = { --can be used for bios for example
 "naomigd",
 "puckman",
 "rampart",
+"rdft2",
 "tgm2",
 "tmnt",
 "konamigx",
@@ -56,6 +57,7 @@ function group(L)
     f("Strikers 1945", {"s1945", "s1945ii", "s1945iii", "s1945p"})
     f("Tapper", {"tapper", "rbtapper", "sutapper"})
     f("King of Fighter", {"kof94", "kof95", "kof96", "kof97", "kof98", "kof99", "kof2000", "kof2001", "kof2002"})
+    f("Raiden", {"raiden", "raiden2", "raidndx", "rdft", "rdft2us", "rfjet"})
 end
 
 function removeRoms (xmlTable, romsToRemove)
