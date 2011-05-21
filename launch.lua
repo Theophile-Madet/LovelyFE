@@ -14,8 +14,9 @@ local first
 
 function st:enter()
 	logo = love.graphics.newImage("Logo.png")
-    loadingBar = love.graphics.newImage("Loading Start.png")
-    loadingBarEnd = love.graphics.newImage("Loading End.png")
+    -- loadingBar = love.graphics.newImage("Loading Start.png")
+    -- loadingBarEnd = love.graphics.newImage("Loading End.png")
+    loadingBarSperm = love.graphics.newImage("loadingBarSperm.png")
     
 	timerLogo = 0
 	loaded = false
@@ -77,10 +78,14 @@ function st:draw()
         local length = W*3/5
         local Y = H*3/4
         local height = H/8
-        local scaleX = length/loadingBar:getWidth()
-        local scaleY = height/loadingBar:getHeight()
+        -- local scaleX = length/loadingBar:getWidth()
+        -- local scaleY = height/loadingBar:getHeight()
+        local scale = length/loadingBarSperm:getWidth()
         
-        if numLoaded < toLoad then
+        love.graphics.setScissor(X,0, length*(numLoaded/toLoad), H)
+        love.graphics.draw(loadingBarSperm, X, Y, 0, scale)
+        love.graphics.setScissor()
+        --[[if numLoaded < toLoad then
             love.graphics.draw(loadingBar, X, Y, 0, scaleX, scaleY)
             
             local r,g,b,a = love.graphics.getColor()
@@ -89,7 +94,7 @@ function st:draw()
             love.graphics.setColor(r,g,b,a)
         else
             love.graphics.draw(loadingBarEnd, X, Y, 0, scaleX, scaleY)
-        end
+        end --]]
         
         if numLoaded ~= 0 then
             love.graphics.printf(numLoaded .. "/" .. toLoad, W/2, Y + 30, 0, "center")
