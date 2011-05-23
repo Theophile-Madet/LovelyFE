@@ -19,7 +19,7 @@ function getGameOfGroup(group, index)
     if group[1][index] ~= nil then
         return group[1][index]
     else
-        error("In " .. debug.getinfo(1)["name"] .. ", no game at index " .. " index")
+        error("In " .. debug.getinfo(1)["name"] .. ", no game at index " .. index)
     end
 end
 
