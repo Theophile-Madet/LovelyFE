@@ -247,12 +247,11 @@ function getInfo()
     
     local info = ""
     
-    local genre = getTagValue(game, "genre")
-    if genre ~= nil then
-        info = "Genre : " .. getTagValue(game, "genre") .. "\n"
-    else
-        info = "Genre : unknown\n"
+    genre = getTagValue(game, "genre")
+    if genre == nil then
+        genre = "unknown"
     end
+    info = info .. "Genre : " .. genre .. "\n"
 	info = info .. "Year : " .. getTagValue(game, "year") .. "\n"
 	info = info .. "Developper : " .. getTagValue(game, "manufacturer") .. "\n"
 	if getAttributeOfTag(game, "display", "width") ~= nil and getAttributeOfTag(game, "display", "height") ~= nil then

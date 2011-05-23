@@ -10,6 +10,10 @@ local st = Gamestate.list
 
 local filterList
 local gameSort
+local group
+local removeRoms
+local genre
+local custom
 
 function st:enter()
 	print("Asking mame about all games...")
@@ -37,7 +41,7 @@ function st:enter()
 	print("Deleting unused infos")
 	filterList(xmlTable)
 	print("Removing unused roms")
-	removeRoms(xmlTable, romsNotToInclude)
+	removeRoms(xmlTable)
 	print("Customizing list")
 	custom(xmlTable)
     print("Classifying games by genre")
@@ -83,4 +87,108 @@ gameSort = function(A, B) --used in a few places to sort the game list
         B = getTagValue(B, "description")
     end
 	return string.lower(A) < string.lower(B)
+end
+
+group = function(L)
+    local function f(groupName, gameList)
+        print(" Creating group " .. groupName)
+        local tableEntry = {}
+        tableEntry["xarg"] = {}
+        tableEntry["xarg"]["name"] = groupName
+        tableEntry["label"] = "group"
+        
+        local groupList = {}
+        for _, gameName in pairs(gameList) do
+            print("     Adding " .. gameName .. " to group")
+            groupList[#groupList+1] = deepcopy(getGameByName(L, gameName))
+        end
+        tableEntry[1] = groupList
+        
+        L[#L+1] = tableEntry
+        removeRoms(L, gameList)
+    end
+    
+    local file = love.filesystem.newFile("groups.txt")
+    file:open("r")
+    for line in file:lines() do
+        local groupName = string.match(line, "%[.+%]") 
+        groupName = string.gsub(groupName, "[%[%]]", "")
+        line = string.gsub(line, groupName, "")
+        line = string.gsub(line, "[%[%]]", "")
+        
+        
+        local games = {}
+        for i in string.gmatch(line, "%w+") do
+            table.insert(games, i)
+        end
+        f(groupName, games)
+    end
+end
+
+removeRoms = function(xmlTable, list)
+    if list == nil then
+        if not love.filesystem.exists("remove.txt") then
+            print("File remove.txt not found. No rom will be removed from the list")
+            return
+        end
+    
+        local file = love.filesystem.newFile("remove.txt")
+        file:open("r")
+        
+        list = {}
+        for line in file:lines() do
+			table.insert(list, line)
+		end
+    end
+    
+	for k, rom in pairs(xmlTable) do
+		romName = getName(rom)
+		for _,v in pairs(list) do
+			if romName == v then
+				xmlTable[k] = nil
+				print("    Removing " .. romName)
+			end
+		end
+	end
+end
+
+genre = function(L)
+    local function f(name, genre)
+        local game = getGameByName(L, name)
+        if game ~= nil then
+            createTag(game, "genre", genre)
+        else
+            print("In function genre, game " .. name .. "not found.")
+        end
+    end
+    
+    local file = love.filesystem.newFile("genres.txt")
+    file:open("r")
+    
+    for line in file:lines() do
+        name = string.match(line, "%w+")
+        genre = string.match(line, "\".+\"")
+        genre = string.gsub(genre, "\"", "")
+        f(name, genre)
+    end
+end
+
+custom = function(L) --used to customize game names
+	local function f(name, description)
+		print("	Changing " .. name .. " description to " .. description)
+		local game = getGameByName(L, name)
+		if game ~= nil then
+			setTagValue(game, "description", description)
+		end
+	end
+    
+    local file = love.filesystem.newFile("names.txt")
+    file:open("r")
+    
+    for line in file:lines() do
+        romName = string.match(line, "%w+")
+        description = string.match(line, "\".+\"")
+        description = string.gsub(description, "\"", "")
+        f(romName, description)
+    end
 end
