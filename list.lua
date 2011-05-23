@@ -107,6 +107,10 @@ group = function(L)
         
         local groupList = {}
         for _, gameName in pairs(gameList) do
+            if not love.filesystem.exists(pathToMame.."/roms/"..gameName..".zip") then
+                print("Game "..gameName.." does not exists. Group " .. groupName .. " won't be created")
+                return
+            end
             print("     Adding " .. gameName .. " to group")
             groupList[#groupList+1] = deepcopy(getGameByName(L, gameName))
         end
