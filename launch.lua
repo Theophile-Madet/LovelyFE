@@ -82,7 +82,7 @@ function st:draw()
     
     if not loaded then
         local r,g,b,a = love.graphics.getColor()
-        love.graphics.setColor(230,88,160)
+        love.graphics.setColor(230,88,160,255)
         love.graphics.rectangle('fill', X, Y, length*(numLoaded/toLoad), height)
         love.graphics.setColor(r,g,b,a)
 
@@ -104,7 +104,8 @@ end
 
 function load()
     print("Reading game list")
-	love.filesystem.load("availableList.lua")() -- gives a gameList table with all games in
+	love.filesystem.load("availableList.lua")() -- gives a fullGameList table with all games in
+    gameList = fullGameList
 	math.randomseed(os.time())
     -- it is said that the first random numbers aren't really random.
 	math.random(#gameList);math.random(#gameList);math.random(#gameList);math.random(#gameList);math.random(#gameList)

@@ -186,6 +186,7 @@ end
 previousLetter = function()
     if isGroup(getGameByNumber(gameList, currentGame)) then
         groupSelection = groupSelection - 1
+        infoMessage = getInfo()
     else
         oldGame = currentGame
         local gameName = getDescriptionOfNumber(gameList, currentGame)
@@ -210,6 +211,7 @@ end
 nextLetter = function()
     if isGroup(getGameByNumber(gameList, currentGame)) then
         groupSelection = groupSelection + 1
+        infoMessage = getInfo()
     else
         oldGame = currentGame
         local gameName = getDescriptionOfNumber(gameList, currentGame)
@@ -243,7 +245,15 @@ function getInfo()
         game = getGameOfGroup(game, groupSelection)
     end
     
-	info = "Year : " .. getTagValue(game, "year") .. "\n"
+    local info = ""
+    
+    local genre = getTagValue(game, "genre")
+    if genre ~= nil then
+        info = "Genre : " .. getTagValue(game, "genre") .. "\n"
+    else
+        info = "Genre : unknown\n"
+    end
+	info = info .. "Year : " .. getTagValue(game, "year") .. "\n"
 	info = info .. "Developper : " .. getTagValue(game, "manufacturer") .. "\n"
 	if getAttributeOfTag(game, "display", "width") ~= nil and getAttributeOfTag(game, "display", "height") ~= nil then
 		info = info .. "Resolution : " .. getAttributeOfTag(game, "display", "width").."*"..getAttributeOfTag(game, "display", "height") .. "\n"

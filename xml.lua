@@ -28,6 +28,9 @@ function getGameByNumber(tbl, index)
 end
 
 function getGameByName(tbl, name)
+    if(name == nil and type(tbl) == "string") then
+        error("No table sent to " .. debug.getinfo(1)["name"])
+    end
 	for _,v in pairs(tbl) do
         if isGroup(v) then
             for _,game in pairs(v[1]) do
@@ -82,6 +85,20 @@ function setTagValue(game, tag, value)
 	
 end
 
+function createTag(game, tag, initialValue)
+    if game == nil then
+		error("Sending nil as game to " .. debug.getinfo(1)["name"])
+	end
+    
+    for _, v in pairs(game) do
+		if v["label"] == tag then
+			error("tag "..tag.." already exists. game="..getName(game)..", value="..initialValue)
+		end
+	end
+    
+    table.insert(game, {[1]=initialValue, ["xarg"]={}, ["label"]=tag})
+end
+
 function getTagValue(game, tag)
 	if game == nil then
 		error("Sending nil as game to " .. debug.getinfo(1)["name"])
@@ -89,15 +106,13 @@ function getTagValue(game, tag)
         game = getGameOfGroup(game)
     end
     
-    if type(game) == "string" then
-        print(game)
-    end
     for _, v in pairs(game) do
         if v["label"] == tag then
             return v[1]
         end
     end
-    error("Tag not found : " .. tag)
+    
+    return nil
 end
 
 function getAttributeOfTag(game, tag, attribute)

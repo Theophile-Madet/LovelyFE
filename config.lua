@@ -72,6 +72,14 @@ function removeRoms (xmlTable, romsToRemove)
 	end
 end
 
+function genre(L)
+    local function f(name, genre)
+        createTag(getGameByName(L, name), "genre", genre)
+    end
+    f("1941", "shmup")
+    f("1942", "shmup")
+end
+
 function custom(L) --used to customize game names
 	local function f(name, description)
 		print("	Changing " .. name .. " description to " .. description)
