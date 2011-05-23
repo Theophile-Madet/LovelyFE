@@ -80,16 +80,17 @@ function st:draw()
     local scale = length/loadingBarSperm:getWidth()
     local height = loadingBarSperm:getHeight()*scale
     
+    local r,g,b,a = love.graphics.getColor()
     if not loaded then
-        local r,g,b,a = love.graphics.getColor()
         love.graphics.setColor(230,88,160,255)
         love.graphics.rectangle('fill', X, Y, length*(numLoaded/toLoad), height)
-        love.graphics.setColor(r,g,b,a)
-
+        love.graphics.secColor(255,255,255,255)
         love.graphics.draw(loadingBarSpermEmpty, X, Y, 0, scale)
     else
+        love.graphics.setColor(255,255,255,255)
         love.graphics.draw(loadingBarSperm, X, Y, 0, scale)
     end
+    love.graphics.setColor(r,g,b,a)
     
     if numLoaded ~= 0 then
         love.graphics.printf(numLoaded .. "/" .. toLoad, W/2, Y + 30, 0, "center")
