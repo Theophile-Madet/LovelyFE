@@ -1,0 +1,12 @@
+[Metal Slug] mslug mslug2 mslugx mslug3 mslug4 mslug5
+[19XX] 1941 1942 1943 1944 19xx
+[Gradius] gradius gradius2 gradius3 gradius4
+[Mortal Kombat] mk mk2 mk3 mk4
+[Puzzle Bobble] pbobble pbobble2 pbobble3 pbobble4
+[R-Type] rtype rtype2 rtypeleo
+[Samurai Shodown] samsho samsho2 samsho3 samsho4 samsho5
+[Street Fighter] sf sf2 sfiii3n ssf2t
+[Strikers] 1945 s1945 s1945ii s1945iii s1945p
+[Tapper] tapper rbtapper sutapper
+[King of Fighter] kof94 kof95 kof96 kof97 kof98 kof99 kof2000 kof2001 kof2002
+[Raiden] raiden raiden2 raidndx rdft rdft2us rfjet
