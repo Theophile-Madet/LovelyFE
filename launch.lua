@@ -84,7 +84,7 @@ function st:draw()
     if not loaded then
         love.graphics.setColor(230,88,160,255)
         love.graphics.rectangle('fill', X, Y, length*(numLoaded/toLoad), height)
-        love.graphics.secColor(255,255,255,255)
+        love.graphics.setColor(255,255,255,255)
         love.graphics.draw(loadingBarSpermEmpty, X, Y, 0, scale)
     else
         love.graphics.setColor(255,255,255,255)
