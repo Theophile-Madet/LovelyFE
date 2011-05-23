@@ -108,21 +108,26 @@ group = function(L)
         removeRoms(L, gameList)
     end
     
-    local file = love.filesystem.newFile("groups.txt")
-    file:open("r")
-    for line in file:lines() do
-        local groupName = string.match(line, "%[.+%]") 
-        groupName = string.gsub(groupName, "[%[%]]", "")
-        line = string.gsub(line, groupName, "")
-        line = string.gsub(line, "[%[%]]", "")
-        
-        
-        local games = {}
-        for i in string.gmatch(line, "%w+") do
-            table.insert(games, i)
+    if love.filesystem.exists("groups.txt") then
+        local file = love.filesystem.newFile("groups.txt")
+        file:open("r")
+        for line in file:lines() do
+            local groupName = string.match(line, "%[.+%]") 
+            groupName = string.gsub(groupName, "[%[%]]", "")
+            line = string.gsub(line, groupName, "")
+            line = string.gsub(line, "[%[%]]", "")
+            
+            
+            local games = {}
+            for i in string.gmatch(line, "%w+") do
+                table.insert(games, i)
+            end
+            f(groupName, games)
         end
-        f(groupName, games)
+    else
+        print("groups.txt not found. No group will be created")
     end
+    
 end
 
 removeRoms = function(xmlTable, list)
@@ -162,14 +167,18 @@ genre = function(L)
         end
     end
     
-    local file = love.filesystem.newFile("genres.txt")
-    file:open("r")
-    
-    for line in file:lines() do
-        name = string.match(line, "%w+")
-        genre = string.match(line, "\".+\"")
-        genre = string.gsub(genre, "\"", "")
-        f(name, genre)
+    if love.filesystem.exists("genres.txt") then
+        local file = love.filesystem.newFile("genres.txt")
+        file:open("r")
+        
+        for line in file:lines() do
+            name = string.match(line, "%w+")
+            genre = string.match(line, "\".+\"")
+            genre = string.gsub(genre, "\"", "")
+            f(name, genre)
+        end
+    else
+        print("genres.txt not found. No game genre will be specified")
     end
 end
 
@@ -182,13 +191,17 @@ custom = function(L) --used to customize game names
 		end
 	end
     
-    local file = love.filesystem.newFile("names.txt")
-    file:open("r")
-    
-    for line in file:lines() do
-        romName = string.match(line, "%w+")
-        description = string.match(line, "\".+\"")
-        description = string.gsub(description, "\"", "")
-        f(romName, description)
+    if love.filesystem.exists("names.txt") then
+        local file = love.filesystem.newFile("names.txt")
+        file:open("r")
+        
+        for line in file:lines() do
+            romName = string.match(line, "%w+")
+            description = string.match(line, "\".+\"")
+            description = string.gsub(description, "\"", "")
+            f(romName, description)
+        end
+    else
+        print("names.txt not found. Game names won't be customized")
     end
 end
