@@ -16,7 +16,11 @@ function getGameOfGroup(group, index)
         index = table.maxn(group[1])
     end
     
-    return group[1][index]
+    if group[1][index] ~= nil then
+        return group[1][index]
+    else
+        error("In " .. debug.getinfo(1)["name"] .. ", no game at index " .. " index")
+    end
 end
 
 function getGameByNumber(tbl, index)
