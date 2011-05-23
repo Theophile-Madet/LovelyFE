@@ -131,11 +131,13 @@ function load()
     
 	mt = {}
 	mt.__index = function(o, key)
-		if key == 0 then
-			return o[table.maxn(o)]
-		else
-            return o[key%table.maxn(o)]
+        if key > table.maxn(o) or key < 0 then
+            key = key % table.maxn(o)
         end
+        if key == 0 then
+            key = table.maxn(o)
+        end
+        return o[key]
 	end
 	setmetatable(gameList, mt)
 	

@@ -48,6 +48,14 @@ function st:enter()
     genre(xmlTable)
     print("Creating roms groups")
     group(xmlTable)
+    print("Remove holes in the array")
+    tempXmlTable = {}
+    for i=1,table.maxn(xmlTable) do
+        if xmlTable[i] ~= nil then
+            table.insert(tempXmlTable, xmlTable[i])
+        end
+    end
+    xmlTable = tempXmlTable
 	print("Sorting list")
 	table.sort(xmlTable, gameSort)
 	
