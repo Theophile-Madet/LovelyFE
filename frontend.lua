@@ -56,6 +56,13 @@ function st:enter()
     end
 end
 
+function st:quit()
+    local last = love.filesystem.newFile("lastgame.txt")
+    last:open("w")
+    last:write(currentGame)
+    last:close()
+end
+
 function st:draw()
 	local game = gameList[currentGame]
 
@@ -94,7 +101,7 @@ function st:keypressed(key, unicode)
 	if  input ~= nil then
 		treatInput(input)
 	elseif key == "escape" then
-		os.exit()
+		love.event.push("q")
 	end
 end
 
@@ -235,7 +242,7 @@ treatInput = function(input)
 	elseif input == "previous letter" then previousLetter()
 	elseif input == "action"          then launch()
 	elseif input == "menu/cancel"     then menu()
-	elseif input == "exit"            then os.exit()
+	elseif input == "exit"            then love.event.push("q")
 	end
 end
 
@@ -351,3 +358,5 @@ function drawGroupArrows()
     love.graphics.draw(im.arrow, W*4/5 - d, (H/5)/2 - groupArrowHeight/2, 0, -groupArrowScaleX, groupArrowScaleY)
     love.graphics.setColor(r,g,b,a)
 end
+
+

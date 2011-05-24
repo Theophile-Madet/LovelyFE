@@ -124,7 +124,7 @@ treatInput = function(input)
 	--"next game" and "previous game" are supposed to be mapped to down/up and "next/previous letter" to left/right
 	--there should be a better, more general solution
 	if     input == "menu/cancel" then Gamestate.switch(oldState)
-    elseif input == "exit"        then os.exit()
+    elseif input == "exit"        then love.event.push("q")
 	end
 	
 	if typeOfSelected == "letter" then

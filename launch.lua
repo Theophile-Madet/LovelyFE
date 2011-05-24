@@ -107,10 +107,12 @@ function load()
     print("Reading game list")
 	love.filesystem.load("availableList.lua")() -- gives a fullGameList table with all games in
     gameList = fullGameList
-	math.randomseed(os.time())
-    -- it is said that the first random numbers aren't really random.
-	math.random(#gameList);math.random(#gameList);math.random(#gameList);math.random(#gameList);math.random(#gameList)
-	currentGame = math.random(#gameList)
+	if love.filesystem.exists("lastgame.txt") then
+        currentGame = tonumber(string.match(love.filesystem.read("lastgame.txt"), "%d+"))
+    end
+    if currentGame == nil then
+        currentGame = math.random(#gameList)
+    end
     
     fontHeight = 12
     

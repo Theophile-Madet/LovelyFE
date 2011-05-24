@@ -83,7 +83,7 @@ end
 
 function st:keypressed(key, unicode)
 	if key == "escape" then
-		os.exit()
+		love.event.push("q")
 	elseif key == "tab" then
 		oldControls = deepcopy(controls)
 		if not love.keyboard.isDown("lshift") then

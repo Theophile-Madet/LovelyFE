@@ -89,7 +89,7 @@ treatInput = function(input)
 		elseif selected == 2 then Gamestate.switch(Gamestate.search)
 		end
     elseif input == "exit" then
-        os.exit()
+        love.event.push("q")
 	elseif love.timer.getTime() - lastInputTime > 0.2 then
 		if input == input == "next game" then 
 			selected = selected + 3 

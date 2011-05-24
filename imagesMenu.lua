@@ -234,7 +234,7 @@ treatInput = function(input)
 	elseif input == "previous game"   then selected = selected - 3
 	elseif input == "next letter"     then selected = selected + 1
 	elseif input == "previous letter" then selected = selected - 1
-	elseif input == "exit"            then os.exit()
+	elseif input == "exit"            then love.event.push("q")
 	end
 	
 	if selected > 9 then
